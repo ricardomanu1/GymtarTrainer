@@ -23,15 +23,18 @@ nlu:
     - Iniciar rutina
     - Inicia la rutina de hoy
     - Iniciar rutina
+    - Quiero empezar la rutina
 
 - intent: rutina
   examples: |
     - ¿Qué rutina tengo hoy?
+    - ¿Qué rutina tengo para hoy?
     - ¿Qué toca hoy?
     - ¿Cuál es el entrenamiento de hoy?
     - ¿Qué tengo que hacer hoy?
     - que me toca hoy?
     - que tengo hoy?
+    - quiero saber que rutina tengo hoy
 
 - intent: rutina_proxima
   examples: |
@@ -53,3 +56,11 @@ nlu:
     - ¿Tengo rutina para hoy?
     - ¿Tengo que hacer algo hoy?
     - ¿Hoy tengo rutina?
+    - Hoy tengo rutina.
+
+- intent: listo
+  examples: |
+    - Estoy listo
+    - Estoi listo
+    - estoy ready
+    - Ya puedes darle

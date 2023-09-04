@@ -40,13 +40,18 @@ class intents_manager(object):
         self.intents.append(('say','utter_rutina_proxima',['rutina_proxima'],'a_dB','rutina_proxima','a_say','utter_rutina_proxima','db','select_next_routine'))
         self.intents.append(('say','utter_rutina_anterior',['rutina_anterior'],'a_dB','rutina_anterior','a_say','utter_rutina_anterior','db','select_previous_routine'))
         
-        self.intents.append(('say','rutina_comprobacion',['rutina_comprobacion'],'a_dB','rutina_comprobacion','a_say','utter_rutina_comprobacion'))
+        self.intents.append(('say','utter_con_rutina',['rutina_comprobacion','with_routine'],'a_dB','rutina_comprobacion','a_say','utter_con_rutina'))
+        self.intents.append(('say','utter_sin_rutina',['rutina_comprobacion','without_routine'],'a_dB','rutina_comprobacion','a_say','utter_sin_rutina'))
         
         self.intents.append(('say','iniciar_rutina',['iniciar_rutina'],'a_dB','iniciar_rutina','a_say','utter_iniciar_rutina','a_say','utter_reloj','a_nB','a_reloj'))
      
         self.intents.append(('say','reloj', ['a_reloj','afirmar'],'a_dB','a_reloj','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_preparado','a_nB','a_preparado')) 
+        self.intents.append(('say','reloj', ['a_reloj','negar'],'a_dB','a_reloj','a_dB','negar','a_say','utter_afirmativo','a_say','utter_no_reloj','a_say','utter_preparado','a_nB','a_preparado')) 
         
-        self.intents.append(('say','preparado', ['a_preparado','afirmar'],'a_dB','a_preparado','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_ejercicio','Kinect','k_observa')) 
+        self.intents.append(('say','preparado', ['a_preparado','afirmar'],'a_dB','a_preparado','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_ejercicio','ki','k_observa')) 
+        self.intents.append(('say','preparado', ['a_preparado','negar'],'a_dB','a_preparado','a_dB','negar','a_say','utter_avisado','a_nB','a_esperando')) 
+        
+        self.intents.append(('say','preparado', ['a_esperando','listo'],'a_dB','a_esperando','a_dB','listo','a_say','utter_afirmativo','a_say','utter_ejercicio','ki','k_observa')) 
 
         ## Instrucciones Gymtar Interface
 

@@ -513,7 +513,7 @@ class Database():
             slot_name = contenido_user['name']
             slot_rol = contenido_user['rol']
             slot_user = user_id        
-        print("nombre: "+str(slot_name))
+        print("Usuario: " + str(slot_name))
 
     def routine_today(user_id):
         global slot_data
@@ -524,11 +524,13 @@ class Database():
         if contenido_user is not None: 
             #Database.routine(contenido_user)
             slot_data = "data"
-            print("Tenemos datos para esta hoy")
+            print("Tenemos datos para hoy")
+            print("Rutina: " + str(contenido_user))
+            return True
         else:
-            print("No hay datos para esta fecha")
+            print("No hay datos para hoy")
             slot_data = "nodata"
-
+            return False
 
 class Coach():
     def name (response):
@@ -621,4 +623,8 @@ class Aprendizaje(Action):
         return []
     
 Database.login("101","127")
-Database.routine_today("101")
+if(Database.routine_today("101")):
+    user_event = ['know','with_routine',True]
+else:
+    user_event = ['know','without_routine',True]   
+Beliefs.agent_beliefs.append(user_event)

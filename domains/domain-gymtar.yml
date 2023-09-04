@@ -11,6 +11,7 @@ intents:
 - login
 - iniciar_rutina
 - rutina_comprobacion
+- listo
 
 slots:  
   data:
@@ -45,6 +46,11 @@ responses:
   - metadata:
       subtext: informar     
     text: Avisame cuando estes listo
+
+  utter_no_reloj:
+  - metadata:
+      subtext: informar     
+    text: Recuerda que sin el reloj no podre comprobar tus datos biométricos.
 
   utter_rutina:
   - metadata:
@@ -106,21 +112,15 @@ responses:
     metadata:
       subtext: informar 
 
-  utter_rutina_comprobacion:
-  - condition:
-      - type: slot
-        name: data
-        value: "data"
+  utter_con_rutina:
+  - metadata:
+      subtext: informar     
     text: "Sí, tienes una rutina para hoy."
-    metadata:
-      subtext: informar 
-  - condition:
-      - type: slot
-        name: data
-        value: "nodata"
+
+  utter_sin_rutina:
+  - metadata:
+      subtext: informar  
     text: "No, no hay ninguna rutina programada para hoy."
-    metadata:
-      subtext: informar 
 
   utter_iniciar_rutina:
   - metadata:
