@@ -24,9 +24,9 @@ intents:
 - identidad
 - identidad_sn
 - identidad_user
+- llamar
 - negar
 - no_solicitar
-- presentacion
 - pregunta_hora
 - pregunta_dia
 - saludar
@@ -34,7 +34,6 @@ intents:
 - out_of_scope
 
 entities:
-- avatar
 - name
 
 slots:  
@@ -426,39 +425,6 @@ responses:
   - metadata:
       subtext: informar     
     text: Disculpa, no estaba atenta, ¿Qué has dicho?
-
-# Saludo a una persona conocida
-  utter_presentacion:
-  - condition:
-      - type: slot
-        name: daytime
-        value: "morning"
-    text: "Buenos días {name}."
-    metadata:
-      subtext: saludar 
-  - condition:
-      - type: slot
-        name: daytime
-        value: "afternoon"
-    text: "Buenas tardes {name}."
-    metadata:
-      subtext: saludar 
-  - condition:
-      - type: slot
-        name: daytime
-        value: "evening"
-    text: "Buenas noches {name}."
-    metadata:
-      subtext: saludar 
-  - metadata:
-      subtext: saludar     
-    text: Hola {name}
-  - metadata:
-      subtext: saludar     
-    text: Hola de nuevo {name}
-  - metadata:
-      subtext: saludar     
-    text: Hola.
 
 # Saludo a una persona conocida
   utter_rol:

@@ -122,12 +122,6 @@ stories:
   - action: chatbot
   - action: to_speech
 
-- story: presentacion_path
-  steps:
-  - intent: presentacion
-  - action: chatbot
-  - action: to_speech
-
 - story: saludar_path
   steps:
   - intent: saludar

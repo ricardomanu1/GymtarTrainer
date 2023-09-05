@@ -380,6 +380,11 @@ nlu:
     - absolutamente no.
     - me niego.
     - ni lo pienses.
+- intent: llamar
+  examples: |
+    - '[Carlos](avatar).'
+    - oye [Carlos](avatar).
+    - hey [Carlos](avatar).
 - intent: no_solicitar
   examples: |
     - en nada.
@@ -388,31 +393,13 @@ nlu:
     - nada.
     - Nada.
     - nadi.
-- intent: presentacion
-  examples: |
-    - yo soy [Ricardo](name)
-    - soy [Ricardo](name)
-    - soy [Amalia](name)
-    - soy [Sebastian](name)
-    - soy [ricardo](name)
-    - soy [Xabi](name)
-    - soy [Iñigo](name)
-    - soy [Joseja](name)
 - intent: saludar  
   examples: |
     - muy buenas.
-    - muy buenas [Sonia](avatar).
-    - muy buenas [Carlos](avatar).
-    - hola [Sonia](avatar).
-    - hola [Carlos](avatar).
     - hola.
     - holas.
     - buenos días.
-    - buenos días [Sonia](avatar).
-    - buenos días [Carlos](avatar).
     - buenas tardes.
-    - buenas tardes [Sonia](avatar).
-    - buenas tardes [Carlos](avatar).
     - buenas noches.
     - ¡hola!   
 - intent: silencio

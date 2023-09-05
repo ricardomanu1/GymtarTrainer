@@ -34,6 +34,7 @@ Be = ''
 lang = 'es-ES'
 polarity = 0
 inter1 = False
+date = ''
 
 ## Kinect
 watch = False
@@ -131,6 +132,7 @@ class ChatBot(Action):
         global polarity
         global avatar
         global inter1
+        global date
 
         global slot_name
         global slot_daytime
@@ -141,45 +143,37 @@ class ChatBot(Action):
         global db
 
         print("--------------------------------------------------------------------------------------------")
-
+        
         inter1 = True
+
+        ## Actualizacion de fecha
+        now = dt.datetime.now()
+        date = now.strftime("%Y-%m-%d")
+        
         ## Valores de entrada, si es un texto
         intent = tracker.latest_message['intent']
         text = tracker.latest_message['text']
         entities = tracker.latest_message['entities']
-        metadata = tracker.latest_message['metadata']                        
-        
-        ## Slots
-        ## Almacenado en memoria
-        #slot_name = tracker.get_slot('name')   
-        slot_avatar = tracker.get_slot('avatar')   
-        #slot_rol = tracker.get_slot('rol')   
-       
+        metadata = tracker.latest_message['metadata']  
+
         Bi = intent['name']
         id_event = metadata['event']
-               
-        slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))          
+        
+        ## Slots: Almacenado en memoria
+        slot_avatar = tracker.get_slot('avatar')             
+        slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))     
 
-        # Metadatas received
+        # Entities:
+        for e in entities:
+            print("entidad: {} = {}".format(e['entity'],e['value']))
+
+        # Metadata:
         for key, value in metadata.items():
             print(key, value)
             if 'id' in metadata:
-                id_user = metadata['id'] 
-                #contenido = db.login(id_user)
-                #slot_name = contenido['name']                 
-                #slot_rol = contenido['rol']                 
+                id_user = metadata['id']       
 
-        # Entities received
-        for e in entities:
-            print("entidad: {} = {}".format(e['entity'],e['value']))
-            if e['entity'] == 'avatar':
-                avatarVoice = e['value']
-                if avatarVoice == 'Sonia':
-                    avatar = 'f'
-                else:
-                    avatar = 'm'
-
-        ## Voice input     
+        ## Metadata: Voice input     
         if (id_event == 'say'):
             if 'emotion' in metadata:
                 Be = metadata['emotion']            
@@ -518,6 +512,7 @@ class Database():
     def routine_today(user_id):
         global slot_data
         global contenido_user
+        global date
         now = dt.datetime.now()
         date = now.strftime("%Y-%m-%d")
         contenido_user = getattr(db, "select_routine")(slot_user,date)
@@ -628,3 +623,4 @@ if(Database.routine_today("101")):
 else:
     user_event = ['know','without_routine',True]   
 Beliefs.agent_beliefs.append(user_event)
+slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))   

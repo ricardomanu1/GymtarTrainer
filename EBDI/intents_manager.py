@@ -16,9 +16,6 @@ class intents_manager(object):
         ## User: me saluda        
         self.intents.append(('say','utter_saludar',['saludar'],'a_say','utter_saludar','a_dB','saludar','a_say','utter_interes','a_nB','espero_respuesta'))
        
-        ## User: se presenta
-        self.intents.append(('say','utter_presentacion',['presentacion'],'a_dB','presentacion','a_say','utter_interes','a_nB','espero_respuesta'))
-        
         ## YO: voy a empatizar con el estado de animo del usuario  
         self.intents.append(('say','utter_empatizar_bien',['espero_respuesta','estado_bien'],'a_dB','espero_respuesta','a_dB','estado_bien','a_say','utter_empatizar_bien','a_say','utter_solicitar'))
         self.intents.append(('say','utter_empatizar_mal',['espero_respuesta','estado_mal'],'a_dB','espero_respuesta','a_dB','estado_mal','a_say', 'utter_empatizar_mal','a_say','utter_solicitar'))
