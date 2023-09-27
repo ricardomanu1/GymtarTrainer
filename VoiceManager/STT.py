@@ -55,7 +55,8 @@ speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_r
 
 # Set multiple properties by id
 speech_config.set_property(
-    property_id=speechsdk.PropertyId.SpeechServiceConnection_SingleLanguageIdPriority, value='Latency')
+    #property_id=speechsdk.PropertyId.SpeechServiceConnection_SingleLanguageIdPriority, value='Latency')
+    property_id=speechsdk.PropertyId.SpeechServiceConnection_LanguageIdMode,value='Continuous')
 
 # Audio input configuration
 audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)

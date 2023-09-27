@@ -42,6 +42,7 @@ class interaction_manager(object):
             })
 # Unreal
     def toUnreal(self,text):
+        print("valor"+text)
         r = requests.post(self.url_U, json={
             "sender": "Vinet_user",
             "message": "{}".format(text),
