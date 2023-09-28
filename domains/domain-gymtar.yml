@@ -12,6 +12,7 @@ intents:
 - iniciar_rutina
 - rutina_comprobacion
 - listo
+- demo_rutina
 
 slots:  
   data:
@@ -19,6 +20,9 @@ slots:
     values:
       - data
       - nodata   
+    influence_conversation: true
+  ejercicio:
+    type: text
     influence_conversation: true
 
 responses:
@@ -169,3 +173,16 @@ responses:
   - metadata:
       subtext: informar     
     text: ¡Mantengan esa energía! Es hora de arrancar con el siguiente.
+
+  utter_eje:
+  - metadata:
+      subtext: informar     
+    text: Venga, vamos con {ejercicio}
+  - metadata:
+      subtext: informar     
+    text: Toca {ejercicio}
+
+  utter_eje_preparate:
+  - metadata:
+      subtext: informar     
+    text: Ponte en posicion 

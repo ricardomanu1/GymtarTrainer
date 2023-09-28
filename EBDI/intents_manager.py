@@ -59,6 +59,13 @@ class intents_manager(object):
                 
         self.intents.append(('say','utter_register',['register'],'a_say','utter_register','a_dB','register','in','i_register'))
         self.intents.append(('know','register',['register'],'a_dB','register','a_say','utter_registro'))
+        
+        ## De UNREAL
+        self.intents.append(('say','demo_rutina',['demo_rutina'],'a_dB','demo_rutina','a_say','utter_ejercicio'))
+        self.intents.append(('know','solicito_ejercicio',['solicito_ejercicio'],'a_dB','solicito_ejercicio','a_say','utter_eje')) #utter_eje_preparate
+        self.intents.append(('know','solicito_descanso',['solicito_descanso'],'a_dB','solicito_descanso','a_say','utter_descanso')) 
+
+        self.intents.append(('know','descanso',['descanso'],'a_dB','descanso','a_say','utter_descanso'))
    
         ## User:'hace preguntas básicas'
         self.intents.append(('say','utter_responder_hora',['pregunta_hora'],'a_say','utter_responder_hora','a_dB','pregunta_hora'))
@@ -121,7 +128,6 @@ class intents_manager(object):
         ## self.intents.append(('know', 'entra_grupo', ['entra_grupo'],'a_fB','entra_grupo','a_nB','saludar'))
         ## self.intents.append(('know', 'entra_grupo', ['entra_grupo'],'a_fB','entra_grupo','a_say','utter_bienvenida','a_say','utter_mirar','ki','k_observar'))
         
-
         # INTRODUCCION
         self.intents.append(('say','utter_intro',['vinet_intro'],'a_dB','vinet_intro','a_say','utter_intro1','a_say','utter_intro2','a_say','utter_intro3','a_nB','saber_portus'))
         self.intents.append(('say','saber_portus',['saber_portus', 'vinet_portus_acierto'],'a_dB','saber_portus','a_dB','vinet_portus_acierto','a_say','utter_portus_ok','a_nB','vinet_intro4'))
@@ -146,8 +152,7 @@ class intents_manager(object):
 
         #self.intents.append(('know', 'isBored', ['isBored'],'a_dB','isBored'))      
         '''
-
-
+        
     def filterI(self, Emotions, Beliefs, Desires):
         desires_fulfill = []
         intents_selected = [i for i in self.intents if i[1] in [d[1] for d in Desires]]

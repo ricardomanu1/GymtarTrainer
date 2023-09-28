@@ -97,3 +97,22 @@ class database:
             else:
                 return
         
+
+    def select_exercises(self,ids):
+        if ids is None:
+            print("No hay datos")
+            return
+        else:
+            print("llega "+str(tuple(ids)))
+            query = "SELECT Name FROM ejercicios WHERE IdExercise IN (%s)"
+            placeholders = ', '.join(['%s'] * len(ids))  # Crear marcadores de posición
+            query = query % placeholders
+            self.cursor.execute(query, ids)
+            result = self.cursor.fetchall()
+            # Obtiene los resultados            
+            if result:
+                lista_plana = [tupla[0] for tupla in result]
+                return lista_plana
+            else:
+                return
+            

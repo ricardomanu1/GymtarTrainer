@@ -64,3 +64,9 @@ nlu:
     - Estoi listo
     - estoy ready
     - Ya puedes darle
+
+- intent: demo_rutina
+  examples: |
+    - Realiza la rutina
+    - Rutina demo
+    - Demo rutina

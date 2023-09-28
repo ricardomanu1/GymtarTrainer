@@ -63,6 +63,8 @@ slot_daytime = ''
 slot_rol = ''
 slot_avatar = 'Carlos'
 id_user = 0
+user_rutine = []
+ejercicio = ''
 slot_user = 0
 avatar = 'm'
 contenido_user = []
@@ -139,7 +141,10 @@ class ChatBot(Action):
         global slot_rol
         global slot_avatar
         global slot_data
+        global slot_ejercicio
         global id_user
+        global user_rutine
+        global ejercicio
         global db
 
         print("--------------------------------------------------------------------------------------------")
@@ -159,8 +164,10 @@ class ChatBot(Action):
         Bi = intent['name']
         id_event = metadata['event']
         
+        slot_ejercicio = tracker.get_slot('ejercicio')
+        
         ## Slots: Almacenado en memoria
-        slot_avatar = tracker.get_slot('avatar')             
+        slot_avatar = tracker.get_slot('avatar') ## cuando entra una entidad            
         slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))     
 
         # Entities:
@@ -172,6 +179,10 @@ class ChatBot(Action):
             print(key, value)
             if 'id' in metadata:
                 id_user = metadata['id']       
+            if 'ejercicio' in metadata:
+                ejercicio = metadata['ejercicio'] 
+                slot_ejercicio = ejercicios_lista[ejercicio] #NO SE ALMACENA EN LA PRIMERA ITERACION
+                ## POSIBILIDADE DE METER UNA FRASE ANTES (ALTA PRIORIDAD)
 
         ## Metadata: Voice input     
         if (id_event == 'say'):
@@ -180,7 +191,7 @@ class ChatBot(Action):
             if 'language' in metadata:
                 lang = metadata['language']
             if 'polarity' in metadata:
-                polarity = metadata['polarity']            
+                polarity = metadata['polarity']                  
             if Bi not in context:
                 Bi = 'out_of_scope'
             user_event = [id_event,Bi,Be,text,slot_name,entities,lang,polarity] 
@@ -213,7 +224,8 @@ class ChatBot(Action):
         return [SlotSet("daytime", slot_daytime),
                 SlotSet("data", slot_data),
                 SlotSet("rol", slot_rol),
-                SlotSet("avatar", slot_avatar)]
+                SlotSet("avatar", slot_avatar),
+                SlotSet("ejercicio", slot_ejercicio)]
 
 ## Estructura EBDI
 class EBDI(Action):
@@ -513,6 +525,7 @@ class Database():
         global slot_data
         global contenido_user
         global date
+        global user_rutine
         now = dt.datetime.now()
         date = now.strftime("%Y-%m-%d")
         contenido_user = getattr(db, "select_routine")(slot_user,date)
@@ -521,11 +534,20 @@ class Database():
             slot_data = "data"
             print("Tenemos datos para hoy")
             print("Rutina: " + str(contenido_user))
+            user_rutine = contenido_user
             return True
         else:
             print("No hay datos para hoy")
             slot_data = "nodata"
             return False
+
+    def exercises_today(exercises_id):
+        exercises = getattr(db, "select_exercises")(exercises_id)
+        if exercises is not None: 
+            return exercises
+        else:
+            return None
+
 
 class Coach():
     def name (response):
@@ -620,6 +642,11 @@ class Aprendizaje(Action):
 Database.login("101","127")
 if(Database.routine_today("101")):
     user_event = ['know','with_routine',True]
+    ejercicios_id = [int(x) for x in user_rutine['ejercicios'].split(',')]
+    ejercicios_lista = Database.exercises_today(ejercicios_id)
+    print(user_rutine)
+    print(ejercicios_id)
+    print(ejercicios_lista)
 else:
     user_event = ['know','without_routine',True]   
 Beliefs.agent_beliefs.append(user_event)
