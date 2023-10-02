@@ -164,7 +164,7 @@ while True:
                     else:
                         time.sleep(duration)       
                     '''
-                    #Interaction.toUnreal(text_trans)
+                    Interaction.toUnreal(text_trans)
                 elif(str(row['action'])=="listen"):
                     archi1 = open("listening.txt","w") 
                     archi1.close()                     
