@@ -48,6 +48,12 @@ interfaceResponse = ''
 routine_say = False
 exercises = []
 
+## Coach
+exercise_say = False
+exercise_current = ''
+exercise_i = 0
+rutina_len = 0
+
 # Gestor EBDI
 Emotions = emotions_manager()
 Beliefs = belief_manager()
@@ -181,8 +187,7 @@ class ChatBot(Action):
                 id_user = metadata['id']       
             if 'ejercicio' in metadata:
                 ejercicio = metadata['ejercicio'] 
-                slot_ejercicio = ejercicios_lista[ejercicio] #NO SE ALMACENA EN LA PRIMERA ITERACION
-                ## POSIBILIDADE DE METER UNA FRASE ANTES (ALTA PRIORIDAD)
+                slot_ejercicio = ejercicios_lista[ejercicio]
 
         ## Metadata: Voice input     
         if (id_event == 'say'):
@@ -370,9 +375,12 @@ class Say(Action):
             tracker: Tracker,
             domain: Dict[Text, Any],
             resp) -> List[Dict[Text, Any]]:
+        global slot_ejercicio
+        
         hours = str(f"{dt.datetime.now().strftime('%H:%M')}")
-        day = the_day(str(f"{dt.datetime.now().strftime('%A')}"))             
-
+        day = the_day(str(f"{dt.datetime.now().strftime('%A')}"))  
+        
+        # AQUI SE DAN LOS VALORES A LOS SLOT EN PRIMERA ITERACION        
         dispatcher.utter_message(
             response = resp,           
             hours = hours,
@@ -381,7 +389,8 @@ class Say(Action):
             name = slot_name,
             rol = slot_rol,
             data = slot_data,
-            avatar = slot_avatar)
+            avatar = slot_avatar,
+            ejercicio = slot_ejercicio)
 
         contador()
         print("dispatcher: " + str(count))           
@@ -411,6 +420,7 @@ class To_Speech(Action):
         tracker.get_slot('daytime') 
         tracker.get_slot('rol') 
         tracker.get_slot('data') 
+        tracker.get_slot('ejercicio') 
 
         if count > 0:
             msg = get_latest_event(tracker.applied_events())     
@@ -548,12 +558,14 @@ class Database():
         else:
             return None
 
-
 class Coach():
-    def name (response):
-        global slot_avatar
-        slot_avatar = "m"
-        print("Cambio de Voz")
+    def name (response):        
+        global exercise_say, exercise_current, exercise_i       
+        if exercise_i < rutina_len:
+            exercise_current = ejercicios_lista[exercise_i]
+            exercise_i += 1 
+            exercise_say = True  
+        print("Coach")
 
 ## Salida de las respuestas csv
 class CSV():
@@ -561,6 +573,7 @@ class CSV():
         global watch, watchResponse
         global interface, interfaceResponse
         global routine_say, exercises
+        global exercise_say, exercise_current
         output_csv = open('speech.csv','w+',newline='')
         writer = csv.writer(output_csv, delimiter =',')
         writer.writerow(['action','response','emotion','language','animation','emotionAzure','video','length','avatar'])
@@ -593,6 +606,11 @@ class CSV():
             for exercise in exercises:
                 writer.writerow(['say',str(exercise), str(Emotions.estado),lang,animation_tag,str(Emotions.tag()),str(video),length,avatar])
             routine_say = False
+            writer.writerow(['listen'])
+        elif(exercise_say):            
+            text_exercise = "Realizaremos unas " + str(exercise_current)
+            writer.writerow(['say',str(text_exercise), str(Emotions.estado),lang,animation_tag,str(Emotions.tag()),str(video),length,avatar])
+            exercise_say = False
             writer.writerow(['listen'])
         else:
             writer.writerow(['listen'])
@@ -644,6 +662,7 @@ if(Database.routine_today("101")):
     user_event = ['know','with_routine',True]
     ejercicios_id = [int(x) for x in user_rutine['ejercicios'].split(',')]
     ejercicios_lista = Database.exercises_today(ejercicios_id)
+    rutina_len = len(ejercicios_lista)
     print(user_rutine)
     print(ejercicios_id)
     print(ejercicios_lista)

@@ -144,7 +144,7 @@ responses:
   utter_ejercicio:
   - metadata:
       subtext: informar     
-    text: Empecemos con el primer ejercicio
+    text: Vamos con el primer ejercicio
   - metadata:
       subtext: informar     
     text: Iniciemos con el primer ejercicio
@@ -181,8 +181,27 @@ responses:
   - metadata:
       subtext: informar     
     text: Toca {ejercicio}
+  - metadata:
+      subtext: informar     
+    text: Ahora haremos {ejercicio}
+  - metadata:
+      subtext: informar     
+    text: Ahora un poco de {ejercicio}
 
   utter_eje_preparate:
   - metadata:
       subtext: informar     
-    text: Ponte en posicion 
+    text: Ponte en posición.
+
+  utter_demo_rutina:
+  - metadata:
+      subtext: informar     
+    text: Empecemos con la rutina de hoy.
+
+  utter_fin_rutina:
+  - metadata:
+      subtext: informar     
+    text: Ya hemos acabado por hoy.
+  - metadata:
+      subtext: informar     
+    text: Listo, ya hemos acabado por hoy.
