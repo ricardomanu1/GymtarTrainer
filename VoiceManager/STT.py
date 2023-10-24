@@ -95,7 +95,7 @@ while True:
                 if (str(result.text) == 'Apagar sistema.'):
                     print("Apagando sistema...")
                     os.remove('listening.txt')
-                    break
+                    break  
                 # System to detect polarity from audio (positive,negative,neutral)
                 #sentiment_analysis = Sentiment.sentiment(result.text,detected_src_lang[0:2])
                 sentiment_analysis = 0.0
@@ -128,7 +128,7 @@ while True:
                     print("Error details: {}".format(result.cancellation_details.error_details))
                     break
             print("--- %s seconds ---" % (time.time() - start_time))
-    except:
+    except Exception as e :
         continue
 
 
