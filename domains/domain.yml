@@ -528,6 +528,5 @@ responses:
     text: ¿Qué puedo hacer por ti?
 
 actions:
-- aprendizaje
 - chatbot
 - to_speech

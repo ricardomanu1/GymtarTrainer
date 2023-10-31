@@ -1,10 +1,12 @@
 # coding=utf-8
 import logging
+import requests
 import json
 from websocket_server import WebsocketServer
 
 # Mantén un registro de los clientes conectados
 connected_clients = {}
+url_R = 'http://127.0.0.1:5005/webhooks/myio/webhook'
 
 # Define callback functions for server events
 def new_client(client, server):
@@ -46,6 +48,7 @@ def message_back(client, server, message):
                 server.send_message(recipient, response_json)
         else:
             print("Unreal ha enviado algo")
+            r = requests.post(url_R, json=data)
 
 def run_websocket_server():
     # Create a new websocket server object

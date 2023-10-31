@@ -54,9 +54,8 @@ service_region = "westeurope"
 speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
 
 # Set multiple properties by id
-speech_config.set_property(
+speech_config.set_property(speechsdk.PropertyId.SpeechServiceConnection_LanguageIdMode, "Latency") #'Continuous'
     #property_id=speechsdk.PropertyId.SpeechServiceConnection_SingleLanguageIdPriority, value='Latency')
-    property_id=speechsdk.PropertyId.SpeechServiceConnection_LanguageIdMode,value='Continuous')
 
 # Audio input configuration
 audio_config = speechsdk.audio.AudioConfig(use_default_microphone=True)
@@ -84,9 +83,7 @@ while True:
             print("Di algo...")
             # Waiting for sentence (maximum of 15 seconds of audio)
             result = recognizer.recognize_once()
-
             start_time = time.time()
-
             # System to detect emotion from audio
             emotion = random.choice(Emotions)            
             # Language recognition in first iteration
@@ -97,31 +94,15 @@ while True:
                     os.remove('listening.txt')
                     break  
                 # System to detect polarity from audio (positive,negative,neutral)
-                #sentiment_analysis = Sentiment.sentiment(result.text,detected_src_lang[0:2])
+                # sentiment_analysis = Sentiment.sentiment(result.text,detected_src_lang[0:2])
                 sentiment_analysis = 0.0
-                ##emotion = SentimentToEmotion(sentiment_analysis)
+                # emotion = SentimentToEmotion(sentiment_analysis)
                 # Send the spanish translation to Rasa
                 text_trans = Translator.translator(result.text,lang,'es')
                 Interaction.say(text_trans,lang,emotion,sentiment_analysis)
                 os.remove('listening.txt')
-
-            # Direct translation after the second iteration
-            #elif result.reason == speechsdk.ResultReason.TranslatedSpeech:            
-                #print("""Input: {}\n Translation to Spanish: {}""".format(
-                #        result.text, result.translations['es']))##, result.translations['en'], result.translations['eu'], result.translations['fr'], result.translations['ja']))
-                ##sentiment_analysis = Sentiment.sentiment(result.text,detected_src_lang[0:2])
-                #sentiment_analysis = 0.0
-                ##emotion = SentimentToEmotion(sentiment_analysis)
-                #if (str(result.translations['es']) == 'Apagar sistema.'):
-                #    print("Apagando sistema...")
-                #    break
-                # Send the spanish translation to Rasa
-                #Interaction.say(result.translations['es'],lang,emotion,sentiment_analysis)
-                #os.remove('listening.txt')
             elif result.reason == speechsdk.ResultReason.NoMatch:
                 print("No speech could be recognized: {}".format(result.no_match_details))
-                # utter_please_rephrase
-                #Interaction.know("nlu_fallback")
             elif result.reason == speechsdk.ResultReason.Canceled:
                 print("Translation canceled: {}".format(result.cancellation_details.reason))
                 if result.cancellation_details.reason == speechsdk.CancellationReason.Error:

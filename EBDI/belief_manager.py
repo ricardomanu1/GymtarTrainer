@@ -71,9 +71,3 @@ class belief_manager(object):
         for b in self.agent_beliefs:
             if b[1] == belief_name:
                 b[2] = False
-
-    def reset_beliefs(self):
-        self.agent_beliefs = []  
-        self.belief_events = []  
-        self.inter = False
-

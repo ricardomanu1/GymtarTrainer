@@ -68,6 +68,7 @@ slot_data = 'nodata'
 slot_daytime = ''
 slot_rol = ''
 slot_avatar = 'Carlos'
+slot_ejercicio = ''
 id_user = 0
 user_rutine = []
 ejercicio = ''
@@ -134,62 +135,46 @@ class ChatBot(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]: 
         # Acceso a variables globales
-        global Bi
-        global Be
-        global lang
-        global polarity
-        global avatar
-        global inter1
-        global date
+        global Bi, Be, lang, polarity, inter1, date
+        global slot_name, slot_daytime, slot_rol, slot_avatar, slot_data, slot_ejercicio
+        global id_user, ejercicio
 
-        global slot_name
-        global slot_daytime
-        global slot_rol
-        global slot_avatar
-        global slot_data
-        global slot_ejercicio
-        global id_user
-        global user_rutine
-        global ejercicio
-        global db
-
-        print("--------------------------------------------------------------------------------------------")
+        print("-------------------------------------------------------------------------------")
         
         inter1 = True
 
-        ## Actualizacion de fecha
+        # Actualizacion de fecha
         now = dt.datetime.now()
         date = now.strftime("%Y-%m-%d")
         
-        ## Valores de entrada, si es un texto
+        # Almacena la intencion y el nivel de confianza
         intent = tracker.latest_message['intent']
+        # Almacena el mensaje de entrada
         text = tracker.latest_message['text']
+        # Almacena las entidades adjuntas al texto
         entities = tracker.latest_message['entities']
+        # Almacena metadatos agjuntos al mensaje
         metadata = tracker.latest_message['metadata']  
 
+        # Almacena la intencion
         Bi = intent['name']
-        id_event = metadata['event']
+        # Almacena el tipo de evento del metadato (say/know)
+        id_event = metadata['event']     
         
-        slot_ejercicio = tracker.get_slot('ejercicio')
+        # Almacena en slot la entidad 'avatar' solo si se usa y se mantiene hasta el cambio
+        slot_avatar = tracker.get_slot('avatar')       
+        # Almacena en slot la fecha actual
+        slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))   
         
-        ## Slots: Almacenado en memoria
-        slot_avatar = tracker.get_slot('avatar') ## cuando entra una entidad            
-        slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))     
-
         # Entities:
         for e in entities:
-            print("entidad: {} = {}".format(e['entity'],e['value']))
+            print("Entidad: {} = {}".format(e['entity'],e['value']))
 
         # Metadata:
         for key, value in metadata.items():
-            print(key, value)
-            if 'id' in metadata:
-                id_user = metadata['id']       
-            if 'ejercicio' in metadata:
-                ejercicio = metadata['ejercicio'] 
-                slot_ejercicio = ejercicios_lista[ejercicio]
+            print("Metadatos: {} = {}".format(key, value))
 
-        ## Metadata: Voice input     
+        # Metadata: entrada de voz  
         if (id_event == 'say'):
             if 'emotion' in metadata:
                 Be = metadata['emotion']            
@@ -199,40 +184,27 @@ class ChatBot(Action):
                 polarity = metadata['polarity']                  
             if Bi not in context:
                 Bi = 'out_of_scope'
-            user_event = [id_event,Bi,Be,text,slot_name,entities,lang,polarity] 
-            print('EVENT: ' + str(user_event))
-            EBDI.run(self, dispatcher, tracker, domain, user_event)                
+            user_event = [id_event,Bi,Be,text,slot_name,entities,lang,polarity]               
                 
-        ## Entradas de conocimiento
+        # Metadata: entrada de comando
         elif (id_event == 'know'):
+            if 'id' in metadata:
+                id_user = metadata['id']       
+            if 'ejercicio' in metadata:
+                ejercicio = metadata['ejercicio'] 
+                slot_ejercicio = ejercicios_lista[ejercicio]
             objInterest = None                    
             user_event = [id_event,text,objInterest,'']             
-            print('EVENT: ' + str(user_event)) 
-            if text in context:
-                EBDI.run(self, dispatcher, tracker, domain, user_event)
-            else:
-                print('No se que hacer con este conocimiento.')
-                
-        ## Entrada de acciones a realizar
-        elif (id_event == 'do'):
-            print('Ahora lo hago')
-        else:
-            print('Comando no conocido')            
-
-        ## comprobacion del diccionario de sinonimos de entidades
-        synonyms_dict = Dictionary.get_synonym_mapper()
-        for value, synonyms in synonyms_dict.items():
-            ## print("Value:", value)
-            ## print("Synonyms:", str(synonyms))
-            Ricardo_synonyms = synonyms      
         
-        return [SlotSet("daytime", slot_daytime),
-                SlotSet("data", slot_data),
-                SlotSet("rol", slot_rol),
-                SlotSet("avatar", slot_avatar),
-                SlotSet("ejercicio", slot_ejercicio)]
+        # Gestion de dialogo
+        print('EVENT: ' + str(user_event)) 
+        EBDI.run(self, dispatcher, tracker, domain, user_event)
+        
+        return [SlotSet("daytime", slot_daytime), SlotSet("data", slot_data),
+                SlotSet("rol", slot_rol), SlotSet("avatar", slot_avatar),
+                SlotSet("name", slot_name), SlotSet("ejercicio", slot_ejercicio)]
 
-## Estructura EBDI
+## Gestion de dialogo con estructura EBDI
 class EBDI(Action):
 
     def name(self) -> Text:
@@ -242,29 +214,28 @@ class EBDI(Action):
             tracker: Tracker,
             domain: Dict[Text, Any],
             user_event) -> List[Dict[Text, Any]]:          
-        ## Conjunto E B D I
-        global Emotions
-        global Beliefs
-        global Desires
-        global Intents 
-        global inter1
+        # Conjunto E B D I
+        global Emotions, Beliefs, Desires, Intents, inter1
 
+        # Se confirma primera iteracion
         Beliefs.inter = inter1
         inter1 = False
-        print(Beliefs.inter)
+
         # Establecen las nuevas creencias a partir del evento
         newBelief = Beliefs.new_belief(user_event)     
         
+        # Se elimina el anterior estado emocional
         Beliefs.del_belief(Emotions.estado)
         for e in Beliefs.emotionalBeliefs:
             Beliefs.del_belief(e)
+
         # Primera gestion del estado emocional
         E1 = Emotions.euf1(Intents,newBelief)
-        print('PRIMARY EMOTION: ' + E1) 
+        print('PRIMARY EMOTION: ' + E1)
+        # Se añade la nueva emocion como creencia
+        newBelief.append(['know',E1,True]) 
         
-        newBelief.append(['know',E1,True])        
-
-        # BDI actualizacion        
+        # BDI actualizacion de las creencias, deseos e intenciones    
         BDI.bdi(self,newBelief)             
 
         # Segunda gestion del estado emocional
@@ -274,40 +245,39 @@ class EBDI(Action):
         #if (inTime and E1 != E2):
         #   BDI.bdi(self,Beliefs.agent_beliefs)
 
+        # Mostramos las acciones que se realizaran
         print('ACTIONS:') 
         p = Plan.plan(self, Intents.agent_intents)  
         if Intents.agent_intents:
             del Intents.agent_intents[0]
-            
+
+        # Ejecutamos todas las acciones    
         for i in p:
-            print('--->' + i)
+            print('   > ' + i)
             exec(i) 
 
         return []
 
-# actualizacion Beliefs Desires Intents
+## Actualizacion Beliefs Desires Intents
 class BDI:
 
     def bdi(self,newBelief):     
         ## Conjunto E B D I
-        global Emotions
-        global Beliefs
-        global Desires
-        global Intents 
+        global Emotions, Beliefs, Desires, Intents 
 
-        #B = brf_in(E,I,Bm) # se actualizan las creencias
+        #Se actualizan las creencias B = brf_in(E,I,Bm)
         Beliefs.brf_in(Emotions,Intents,newBelief)
         print('BELIEFS:')
         for belief in Beliefs.agent_beliefs:
             print(" -", belief[0], belief[1], belief[2])
 
-        #D = options(B,I) # se crean los deseos
+        #Se crean los deseos D = options(B,I)
         Desires.options(Beliefs,Intents)
         print('DESIRES:')
         for desire in Desires.agent_desires:
             print(" -", desire[0], desire[1], desire[2])     
 
-        #I = filterI(E,B,D,I)
+        #Se filtran las intenciones I = filterI(E,B,D,I)
         Intents.filterI(Emotions,Beliefs,Desires.agent_desires)
         print('INTENTS:')
         for intent in Intents.agent_intents:
@@ -318,6 +288,7 @@ class BDI:
 
         return []
 
+## Interpretacion de planes
 class Plan:
 
     def plan(self, Intents):
@@ -329,78 +300,36 @@ class Plan:
                     resp = intent[idx+1]
                     s = "Say.run(self, dispatcher, tracker, domain,'{0}')".format(str(resp))
                     p.append((s))
-
+                # Nueva creencia
                 if val == 'a_nB':
                     user_event = ['say',intent[idx+1],'none','','','','']   
                     s = "EBDI.run(self, dispatcher, tracker, domain,{0})".format(user_event)
                     p.append((s))
-
+                # Eliminar creencia
                 if val == 'a_dB':
                     s = "Beliefs.del_belief('{0}')".format(str(intent[idx+1]))
                     p.append(s)
-
+                # Creencia cumplida
                 if val == 'a_fB':
                     s = "Beliefs.fulfill_belief('{0}')".format(str(intent[idx+1]))
                     p.append(s)
-
-                if val == 'a_rB':
-                    s = "Beliefs.reset_beliefs()"
-                    p.append(s)
-
-                # solicitud de camara
+                # Solicitud de camara
                 if val == 'ki':
                     s = "Kinect.name('{0}')".format(str(intent[idx+1]))
                     p.append(s)
-                # solicitud de interfaz
+                # Solicitud de interfaz
                 if val == 'in':
                     s = "Interface.name('{0}')".format(str(intent[idx+1]))
                     p.append(s)
-                # solicitud de base de datos
+                # Solicitud de base de datos
                 if val == 'db':
                     s = "Database.name('{0}')".format(str(intent[idx+1]))
                     p.append(s)
-                # 
+                # Solicitud de entrenador
                 if val == 'co':
                     s = "Coach.name('{0}')".format(str(intent[idx+1]))
                     p.append(s)
         return p
-
-## Acciones ##
-class Say(Action):
-
-    def name(self) -> Text:
-        return "say"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any],
-            resp) -> List[Dict[Text, Any]]:
-        global slot_ejercicio
-        
-        hours = str(f"{dt.datetime.now().strftime('%H:%M')}")
-        day = the_day(str(f"{dt.datetime.now().strftime('%A')}"))  
-        
-        # AQUI SE DAN LOS VALORES A LOS SLOT EN PRIMERA ITERACION        
-        dispatcher.utter_message(
-            response = resp,           
-            hours = hours,
-            day = day,
-            daytime = slot_daytime,
-            name = slot_name,
-            rol = slot_rol,
-            data = slot_data,
-            avatar = slot_avatar,
-            ejercicio = slot_ejercicio)
-
-        contador()
-        print("dispatcher: " + str(count))           
-        tracker.get_slot('daytime')
-        tracker.get_slot('rol')
-        tracker.get_slot('avatar')
-        tracker.get_slot('data')
-
-
-        return []
 
 ## Generar los ficheros de salida
 class To_Speech(Action):
@@ -412,9 +341,8 @@ class To_Speech(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]
             ) -> List[Dict[Text, Any]]:
-        global msg
-        global count   
-        global Emotions        
+       
+        global msg, count, Emotions        
 
         print('----RESPONSES----')  
         tracker.get_slot('daytime') 
@@ -430,35 +358,60 @@ class To_Speech(Action):
 
         return []
 
+## Acciones ##
+
+## Accion de hablar
+class Say(Action):
+
+    def name(self) -> Text:
+        return "say"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any],
+            resp) -> List[Dict[Text, Any]]:
+        
+        hours = str(f"{dt.datetime.now().strftime('%H:%M')}")
+        day = the_day(str(f"{dt.datetime.now().strftime('%A')}"))  
+
+        contador()
+        print("   Dispatcher: " + str(count))   
+
+        # Rasa dispara la respuesta junto a los valores de los slots        
+        dispatcher.utter_message(response = resp, ejercicio = slot_ejercicio, day = day,
+            daytime = slot_daytime, name = slot_name, rol = slot_rol, data = slot_data,
+            avatar = slot_avatar, hours = hours)
+
+        return []
+
+# Accion para usar la camara
 class Kinect():
     def name(response):
-        global watch
-        global watchResponse
+        global watch, watchResponse
         watch = True
         watchResponse = response
         return "echo"
 
+# Accion para usar la interfaz
 class Interface():
     def name(response):
-        global interface
-        global interfaceResponse
+        global interface, interfaceResponse
         interface = True
         interfaceResponse = response
         return "echo"
 
+# Accion para usar la base de datos
 class Database():
     def name (response):
-        global id_user
-        global slot_name
-        global slot_rol        
-        global slot_data 
-        global slot_user 
+        global id_user, slot_name, slot_rol, slot_data, slot_user 
+        # Iniciar sesion
         if response == "login":
             contenido_user = getattr(db, response)(id_user,127)
             if contenido_user is not None:
                 slot_name = contenido_user['name']
                 slot_rol = contenido_user['rol']
                 slot_user = id_user
+        # Seleccion de rutina
         if response == "select_routine" :           
             now = dt.datetime.now()
             date = now.strftime("%Y-%m-%d")
@@ -469,6 +422,7 @@ class Database():
             else:
                 print("No hay datos para esta fecha")
                 slot_data = "nodata"
+        # Seleccion de rutina del proximo dia
         if response == "select_next_routine" :           
             now = dt.datetime.now()
             next_day = now + dt.timedelta(days=1)
@@ -480,6 +434,7 @@ class Database():
             else:
                 print("No hay datos para esta fecha")
                 slot_data = "nodata"
+        # Seleccion de rutina del dia anterior
         if response == "select_previous_routine" :           
             now = dt.datetime.now()
             previous_day = now - dt.timedelta(days=1)
@@ -498,8 +453,7 @@ class Database():
         return "echo"
 
     def routine(contenido_user):
-        global routine_say
-        global exercises
+        global routine_say, exercises
         exercises = []
         routine_say = True        
         print(contenido_user)       
@@ -521,9 +475,7 @@ class Database():
             exercises.append(new_string)
         
     def login(user_id,user_pass):
-        global slot_name
-        global slot_rol
-        global slot_user        
+        global slot_name, slot_rol, slot_user        
         contenido_user = getattr(db, "login")(user_id,user_pass)
         if contenido_user is not None:
             slot_name = contenido_user['name']
@@ -558,6 +510,7 @@ class Database():
         else:
             return None
 
+# Accion para usar la demo
 class Coach():
     def name (response):        
         global exercise_say, exercise_current, exercise_i       
@@ -594,7 +547,7 @@ class CSV():
                     length = float(response['metadata']['metadata']['length'])
                 else:
                     length = 0
-            print(' -' + str(response['text']))
+            print(' - ' + str(response['text']))
             writer.writerow(['say',str(response['text']), str(Emotions.estado),lang,animation_tag,str(Emotions.tag()),str(video),length,avatar])
         if(watch):
             writer.writerow(['watch',str(watchResponse)])
@@ -629,34 +582,8 @@ class Dictionary:
                 for item in json.loads(nlu_md_json)['rasa_nlu_data']['entity_synonyms']:
                     result_dict[item['value']] = item['synonyms']
         return result_dict
-
-class Aprendizaje(Action):
-
-    def name(self) -> Text:
-        return "aprendizaje"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:        
-        entities = tracker.latest_message['entities']
-        intent = tracker.latest_message['intent']
-        text = tracker.latest_message['text']
-        print(intent)
-        print(entities)        
-        print(text)
-        message = "Comando de aprendizaje"
-        dispatcher.utter_message(text=message)
-        for e in entities:
-            if e['entity'] == 'name':
-                name = e['value']
-            if name == "ricardo":
-                message = "Hola Ricardo, estoy listo para aprender"
-                '''a = tracker.'''
-            if name != "ricardo":
-                message = "Lo siento, no estas autorizado"     
-        dispatcher.utter_message(text=message)
-        return []
     
+# Ejecución Inicial
 Database.login("101","127")
 if(Database.routine_today("101")):
     user_event = ['know','with_routine',True]
