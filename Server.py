@@ -30,7 +30,7 @@ def message_back(client, server, message):
     # Tomamoes la respuesta
     respuesta = data['message']
     print(f"Message from client {client['id']}: {respuesta}")
-
+    print(data)
     # Construimos el nuevo mensaje
     response = {
         "respuesta": f"{respuesta}"       
@@ -48,6 +48,7 @@ def message_back(client, server, message):
                 server.send_message(recipient, response_json)
         else:
             print("Unreal ha enviado algo")
+            print(data)
             r = requests.post(url_R, json=data)
 
 def run_websocket_server():

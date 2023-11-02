@@ -329,6 +329,9 @@ class Plan:
                 if val == 'co':
                     s = "Coach.name('{0}')".format(str(intent[idx+1]))
                     p.append(s)
+                if val == 'li':
+                    s = "Listening.name('{0}')".format(str(intent[idx+1]))
+                    p.append(s)
         return p
 
 ## Generar los ficheros de salida
@@ -519,6 +522,13 @@ class Coach():
             exercise_i += 1 
             exercise_say = True  
         print("Coach")
+
+class Listening():
+    def name (response):        
+        listen = open("VoiceManager/listening.txt","w") 
+        listen.close()
+        print("Modo: escucha")
+
 
 ## Salida de las respuestas csv
 class CSV():

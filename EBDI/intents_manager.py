@@ -89,6 +89,8 @@ class intents_manager(object):
 
         ## Comprobacion: Camara
         self.intents.append(('say', 'k_observa', ['k_observa'],'a_dB','k_observa','ki', 'k_observa'))
+
+        self.intents.append(('know', 'k_escucha', ['k_escucha'],'a_dB','k_escucha','li','k_escucha'))
                 
         
     def filterI(self, Emotions, Beliefs, Desires):
