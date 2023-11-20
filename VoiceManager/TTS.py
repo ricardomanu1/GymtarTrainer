@@ -5,7 +5,7 @@ from azure.cognitiveservices.speech.audio import AudioOutputConfig
 from XML import XML
 from translator import translator
 from sentiment import sentiment
-from interaction_manager import interaction_manager
+#from interaction_manager import interaction_manager
 
 with open('..\\..\\AzureKeys.txt') as f:
     lines = [line.rstrip() for line in f]
@@ -25,7 +25,7 @@ Translator = translator(translator_key)
 # Language
 Sentiment = sentiment(sentiment_key)
 # Interaction
-Interaction = interaction_manager()
+# Interaction = interaction_manager()
 lang = 'es-ES'
 duration = 1.0
 length = 0.0
@@ -164,7 +164,7 @@ while True:
                     else:
                         time.sleep(duration)       
                     '''
-                    Interaction.toUnreal(text_trans)
+                    #Interaction.toUnreal(text_trans)
                 elif(str(row['action'])=="listen"):
                     archi1 = open("listening.txt","w") 
                     archi1.close()                     

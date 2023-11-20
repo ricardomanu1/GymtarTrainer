@@ -83,7 +83,7 @@ class database:
         else:
             #print("hay datos")
             # Ejecutar una consulta SELECT
-            consulta = "SELECT Name FROM ejercicios where IdExercise = %s"
+            consulta = "SELECT e_name FROM ejercicios where e_id = %s"
             # Ejecuta la consulta con el parámetro pasado
             self.cursor.execute(consulta, (id,))
             # Obtiene los resultados
@@ -104,7 +104,7 @@ class database:
             return
         else:
             print("llega "+str(tuple(ids)))
-            query = "SELECT Name FROM ejercicios WHERE IdExercise IN (%s)"
+            query = "SELECT e_name FROM ejercicios WHERE e_id IN (%s)"
             placeholders = ', '.join(['%s'] * len(ids))  # Crear marcadores de posición
             query = query % placeholders
             self.cursor.execute(query, ids)
