@@ -49,12 +49,12 @@ responses:
   utter_avisado:
   - metadata:
       subtext: informar     
-    text: Avisame cuando estes listo
+    text: Avísame cuando estés listo
 
   utter_no_reloj:
   - metadata:
       subtext: informar     
-    text: Recuerda que sin el reloj no podre comprobar tus datos biométricos.
+    text: Recuerda que sin el reloj no podré comprobar tus datos biométricos.
 
   utter_rutina:
   - metadata:
@@ -64,7 +64,7 @@ responses:
       - type: slot
         name: data
         value: "data"
-    text: "Hoy toca hacer esto."
+    text: Hoy toca hacer esto.
     metadata:
       subtext: informar 
 
@@ -72,7 +72,7 @@ responses:
       - type: slot
         name: data
         value: "nodata"
-    text: "No hay resultados."
+    text: No hay resultados.
     metadata:
       subtext: informar 
 
@@ -80,7 +80,7 @@ responses:
       - type: slot
         name: data
         value: "nodata"
-    text: "No tienes rutina para hoy."
+    text: No tienes rutina para hoy.
     metadata:
       subtext: informar 
 
@@ -89,14 +89,14 @@ responses:
       - type: slot
         name: data
         value: "data"
-    text: "Tendrás esta rutina."
+    text: Tendrás esta rutina.
     metadata:
       subtext: informar 
   - condition:
       - type: slot
         name: data
         value: "nodata"
-    text: "No tienes nada programado para mañana."
+    text: No tienes nada programado para mañana.
     metadata:
       subtext: informar 
 
@@ -105,26 +105,26 @@ responses:
       - type: slot
         name: data
         value: "data"
-    text: "Tuviste esta rutina."
+    text: Tuviste esta rutina.
     metadata:
       subtext: informar 
   - condition:
       - type: slot
         name: data
         value: "nodata"
-    text: "No hay datos registrados del día de ayer."
+    text: No hay datos registrados del día de ayer.
     metadata:
       subtext: informar 
 
   utter_con_rutina:
   - metadata:
       subtext: informar     
-    text: "Sí, tienes una rutina para hoy."
+    text: Sí, tienes una rutina para hoy.
 
   utter_sin_rutina:
   - metadata:
       subtext: informar  
-    text: "No, no hay ninguna rutina programada para hoy."
+    text: No, no hay ninguna rutina programada para hoy.
 
   utter_iniciar_rutina:
   - metadata:
@@ -158,7 +158,7 @@ responses:
     text: Aprovecha para soltar un poco la tensión.
   - metadata:
       subtext: informar     
-    text: ¿Sintientes esos músculos trabajando? ¡Vamos por más!"
+    text: ¿Sintientes esos músculos trabajando? ¡Vamos por más!
   - metadata:
       subtext: informar     
     text: Siéntete libre de estirar un poco si lo necesitas.

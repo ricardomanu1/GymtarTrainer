@@ -167,7 +167,7 @@ responses:
     text: Adiós.
   - metadata:
       subtext: despedir     
-    text: Cuidate.
+    text: Cuídate.
   - metadata:
       subtext: despedir     
     text: Nos vemos.
@@ -215,7 +215,7 @@ responses:
     text: Me alegro.
   - metadata:
       subtext: informar     
-    text: Que bueno.
+    text: Qué bueno.
   - metadata:
       subtext: informar     
     text: Genial.
@@ -227,7 +227,7 @@ responses:
     text: Vaya...
   - metadata:
       subtext: informar     
-    text: Que mal.
+    text: Qué mal.
   - metadata:
       subtext: informar     
     text: Lo siento.
@@ -239,10 +239,13 @@ responses:
     text: Procura hidratarte y descansar lo suficiente.
   - metadata:
       subtext: informar     
-    text: Alimentate bien para recuperar las energías.
+    text: Aliméntate bien para recuperar las energías.
   - metadata:
       subtext: informar     
     text: ¿Quieres descansar?.
+  - metadata:
+      subtext: informar     
+    text: ¿Te gustaría descansar?.
 
 # Empatizar a la emocion
   utter_empatizar_emocion:
@@ -373,7 +376,7 @@ responses:
     text: ¿Qué tal {name}?
   - metadata:
       subtext: preguntar     
-    text: ¿Qué tal estas {name}?
+    text: ¿Qué tal estás {name}?
   - metadata:
       subtext: preguntar     
     text: ¿Qué te cuentas {name}?
@@ -409,7 +412,10 @@ responses:
   utter_out_of_scope:
   - metadata:
       subtext: informar     
-    text: No se responder esa solicitud.
+    text: No sé responder esa solicitud.
+  - metadata:
+      subtext: informar     
+    text: No sé responderte esa solicitud.
   - metadata:
       subtext: informar     
     text: Se escapa a mis conocimientos.
@@ -439,7 +445,7 @@ responses:
       - type: slot
         name: rol
         value: "user"
-    text: "¿Quiéres consultar la rutina de ejercicios de hoy?"
+    text: "¿Quieres consultar la rutina de ejercicios de hoy?"
     metadata:
       subtext: informar 
   - metadata:
@@ -513,13 +519,13 @@ responses:
     text: ¿Se te ofrece algo?
   - metadata:
       subtext: preguntar     
-    text: ¿En que puedo ayudarte?
+    text: ¿En qué puedo ayudarte?
   - metadata:
       subtext: preguntar     
-    text: ¿Como puedo ayudarte?
+    text: ¿Cómo puedo ayudarte?
   - metadata:
       subtext: preguntar     
-    text: Dime, ¿En que te puedo ayudar?
+    text: Dime, ¿En qué te puedo ayudar?
   - metadata:
       subtext: preguntar     
     text: ¿Necesitas algo?

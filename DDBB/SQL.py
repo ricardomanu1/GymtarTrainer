@@ -8,6 +8,7 @@ class database:
             'password': 'gymtar',
             'host': '127.0.0.1',
             'database': 'gymtar',
+            'port': 3306,
             'raise_on_warnings': True
         }
         self.conn = None
@@ -15,6 +16,7 @@ class database:
 
     def connection(self):
         try:
+            print("intentando conectar")
             # Crea una conexión a la base de datos
             self.conn = mysql.connector.connect(**self.config)
             # Crea un cursor para ejecutar consultas
@@ -33,9 +35,11 @@ class database:
             print("No hay datos")
             return
         else:
+            if self.connection():
+                print("ok")
             #print("hay datos")
             # Ejecutar una consulta SELECT
-            consulta = "SELECT name,rol FROM usuarios where IdUser = %s"
+            consulta = "SELECT u_name,u_rol FROM usuarios where u_id = %s"
             # Ejecuta la consulta con el parámetro pasado
             self.cursor.execute(consulta, (id,))
             # Obtiene los resultados
@@ -58,7 +62,7 @@ class database:
         else:
             #print("hay datos")
             # Ejecutar una consulta SELECT
-            consulta = "SELECT Ejercicios,Repeticiones,Tiempo FROM rutina where IdUser = %s AND Fecha =%s"
+            consulta = "SELECT r_exercises,r_repetitions,r_time FROM rutina where r_id = %s AND r_date =%s"
             # Ejecuta la consulta con el parámetro pasado
             self.cursor.execute(consulta, (id,date))
             # Obtiene los resultados
