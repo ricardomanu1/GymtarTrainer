@@ -35,8 +35,6 @@ class database:
             print("No hay datos")
             return
         else:
-            if self.connection():
-                print("ok")
             #print("hay datos")
             # Ejecutar una consulta SELECT
             consulta = "SELECT u_name,u_rol FROM usuarios where u_id = %s"
@@ -117,6 +115,28 @@ class database:
             if result:
                 lista_plana = [tupla[0] for tupla in result]
                 return lista_plana
+            else:
+                return
+            
+
+    def select_animation(self,id):
+        if id is None:
+            print("No hay datos")
+            return
+        else:
+            #print("hay datos")
+            # Ejecutar una consulta SELECT
+            consulta = "SELECT e_animation FROM ejercicios where e_id = %s"
+            # Ejecuta la consulta con el parámetro pasado
+            self.cursor.execute(consulta, (id,))
+            # Obtiene los resultados
+            result = self.cursor.fetchone()
+            contenido_user = {
+                'name': ""
+            }
+            if result:
+                contenido_user['name'] = str(result[0])
+                return contenido_user
             else:
                 return
             

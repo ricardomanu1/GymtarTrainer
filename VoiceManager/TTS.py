@@ -1,3 +1,5 @@
+﻿import websocket #pip install websocket-client
+import json
 import os, time, csv #, sys
 import azure.cognitiveservices.speech as speechsdk
 from azure.cognitiveservices.speech import AudioDataStream
@@ -15,6 +17,15 @@ speech_key = str(lines[0]) #sys.argv[1]
 translator_key = str(lines[1]) #sys.argv[2]
 # Language Service Api key
 sentiment_key = str(lines[2]) #sys.argv[3]
+
+# Crea una conexión WebSocket al servidor
+ws = websocket.WebSocket()
+ws.connect("ws://127.0.0.1:5059/")  # Asegúrate de que la dirección y el puerto coincidan
+
+# Define el ID del cliente (puedes asignar un ID único)
+client_id = 2
+content_list = [] 
+content_joined = [] 
 
 # SSML Generator
 XML = XML()
@@ -39,6 +50,19 @@ speech_config.speech_synthesis_voice_name ="en-US-JennyMultilingualNeural"
 audio_config = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
 #audio_config = speechsdk.AudioConfig(use_default_microphone=False, filename = "Response/response.wav")
 speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config,audio_config=audio_config)
+
+# Función para enviar un mensaje al servidor
+def send_message(content,polarity,body_anim, recipient):
+    message = {
+        "sender": "Rasa",
+        "sender_id": client_id,
+        "message": content,
+        "metadata": {"event":"say","polarity":polarity,"animation":body_anim}
+    }
+    if recipient is not None:
+        message["recipient"] = recipient
+    ws.send(json.dumps(message))
+
 
 while True:      
     time.sleep(1)  
@@ -68,7 +92,7 @@ while True:
                     avatar = str(row['avatar'])
                     sentiment_analysis = Sentiment.sentiment(contents,lang)
                     # Polarity
-                    emo_value = sentiment_analysis
+                    polarity = sentiment_analysis
                     # XML - SSML generator               
                     if lang == 'es-ES' or lang == 'eu-ES': ## Spanish or Basque 
                         text_trans = contents
@@ -79,6 +103,9 @@ while True:
                         XML.enSSML(text_trans,emotionAzure,lang)       
                     # Reading SSML file
                     ssml_string = open("Response/respuesta.xml", "r+", encoding="utf-8").read()
+
+                    send_message(contents, polarity,body_anim, recipient=1)
+
                     # Audio generated
                     result = speech_synthesizer.speak_ssml_async(ssml_string).get()
                     # Audio memory stream to file

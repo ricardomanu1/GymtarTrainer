@@ -45,10 +45,10 @@ class intents_manager(object):
         self.intents.append(('say','reloj', ['a_reloj','afirmar'],'a_dB','a_reloj','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_preparado','a_nB','a_preparado')) 
         self.intents.append(('say','reloj', ['a_reloj','negar'],'a_dB','a_reloj','a_dB','negar','a_say','utter_afirmativo','a_say','utter_no_reloj','a_say','utter_preparado','a_nB','a_preparado')) 
         
-        self.intents.append(('say','preparado', ['a_preparado','afirmar'],'a_dB','a_preparado','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_ejercicio','ki','k_observa')) 
+        self.intents.append(('say','preparado', ['a_preparado','afirmar'],'a_dB','a_preparado','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_ejercicio','a_say','utter_eje','ki','k_observa')) 
         self.intents.append(('say','preparado', ['a_preparado','negar'],'a_dB','a_preparado','a_dB','negar','a_say','utter_avisado','a_nB','a_esperando')) 
         
-        self.intents.append(('say','preparado', ['a_esperando','listo'],'a_dB','a_esperando','a_dB','listo','a_say','utter_afirmativo','a_say','utter_ejercicio','ki','k_observa')) 
+        self.intents.append(('say','preparado', ['a_esperando','listo'],'a_dB','a_esperando','a_dB','listo','a_say','utter_afirmativo','a_say','utter_ejercicio','a_say','utter_eje','ki','k_observa')) 
 
         ## Instrucciones Gymtar Interface
 

@@ -47,6 +47,7 @@ interfaceResponse = ''
 ## Database
 routine_say = False
 exercises = []
+animations = []
 
 ## Coach
 exercise_say = False
@@ -414,6 +415,9 @@ class Database():
                 slot_name = contenido_user['name']
                 slot_rol = contenido_user['rol']
                 slot_user = id_user
+        # Seleccion de ejercicio
+        if response == "select_exercise":
+            print("select_exercise")
         # Seleccion de rutina
         if response == "select_routine" :           
             now = dt.datetime.now()
@@ -456,19 +460,22 @@ class Database():
         return "echo"
 
     def routine(contenido_user):
-        global routine_say, exercises
+        global routine_say, exercises,animations
         exercises = []
+        animations = []
         routine_say = True        
         print(contenido_user)       
         e = contenido_user['ejercicios']
-        e_array = [int(x) for x in e.split(",")]
+        e_array = [int(x) for x in e.split(",")]        
         r = contenido_user['repeticiones']        
         r_array = [int(x) for x in r.split(",")]
         t = contenido_user['tiempos']        
         t_array = [int(x) for x in t.split(",")]
         select_exercise = "select_exercise"
+        select_animation = "select_animation"
         for i in range(len(e_array)):                   
             e_name = getattr(db, select_exercise)(e_array[i])
+            e_animation = getattr(db, select_animation)(e_array[i])
             if r_array[i] != 1:
                 new_string = "{} con {} repeticiones de {} segundos.".format(
                 e_name['name'],r_array[i],t_array[i])
@@ -476,6 +483,7 @@ class Database():
                 new_string = "{} con {} repetición de {} segundos.".format(
                 e_name['name'],r_array[i],t_array[i])
             exercises.append(new_string)
+            animations.append(e_animation['name'])
         
     def login(user_id,user_pass):
         global slot_name, slot_rol, slot_user        
@@ -535,7 +543,7 @@ class CSV():
     def name(self,responses):
         global watch, watchResponse
         global interface, interfaceResponse
-        global routine_say, exercises
+        global routine_say, exercises, animations
         global exercise_say, exercise_current
         output_csv = open('speech.csv','w+',newline='')
         writer = csv.writer(output_csv, delimiter =',')
@@ -566,8 +574,8 @@ class CSV():
             writer.writerow(['interface',str(interfaceResponse)])
             interface = False
         elif(routine_say):
-            for exercise in exercises:
-                writer.writerow(['say',str(exercise), str(Emotions.estado),lang,animation_tag,str(Emotions.tag()),str(video),length,avatar])
+            for i,exercise in enumerate(exercises):
+                writer.writerow(['say',str(exercise), str(Emotions.estado),lang,animations[i],str(Emotions.tag()),str(video),length,avatar])
             routine_say = False
             writer.writerow(['listen'])
         elif(exercise_say):            

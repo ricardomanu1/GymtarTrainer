@@ -7,11 +7,11 @@ ec2_user = 'ec2-user'
 private_key_path = '../../clave-1.pem'
 
 # Datos de la base de datos RDS
-rds_host = '172.31.14.58'
+rds_host = 'database-1.ccbeilzuceh6.eu-north-1.rds.amazonaws.com'
 rds_port = 3306
 db_user = 'admin'
 db_password = 'Sistemas2023!'
-db_database = 'Gymtar'
+db_database = 'Prueba'
 
 # Establecer conexión SSH a la instancia EC2
 private_key = paramiko.RSAKey(filename=private_key_path)
