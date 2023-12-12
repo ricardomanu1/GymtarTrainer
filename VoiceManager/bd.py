@@ -1,57 +1,35 @@
-import paramiko
-import mysql.connector
+import requests
 
-# Datos de la instancia EC2
-ec2_host = '16.170.250.70'
-ec2_user = 'ec2-user'
-private_key_path = '../../clave-1.pem'
-
-# Datos de la base de datos RDS
-rds_host = 'database-1.ccbeilzuceh6.eu-north-1.rds.amazonaws.com'
-rds_port = 3306
-db_user = 'admin'
-db_password = 'Sistemas2023!'
-db_database = 'Prueba'
-
-# Establecer conexión SSH a la instancia EC2
-private_key = paramiko.RSAKey(filename=private_key_path)
-ssh_client = paramiko.SSHClient()
-ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-# Inicializar la variable de conexión
-connection = None
+url = "http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/ejercicios"
 
 try:
-    ssh_client.connect(ec2_host, username=ec2_user, pkey=private_key)
-    print("Conexión SSH exitosa")
+    # Realizar la solicitud GET a la URL
+    response = requests.get(url)
+    
+    # Verificar si la solicitud fue exitosa (código de estado 200)
+    if response.status_code == 200:
+        # Obtener el contenido JSON como una lista de diccionarios
+        usuarios_data = response.json()
+        ids = [9,6,4,2,3]
+        #usuarios_edades_especificas = [usuario for usuario in usuarios_data if usuario["u_age"] in [27, 32]]
+        #u_names_edades_especificas = [usuario["u_name"] for usuario in usuarios_edades_especificas]
+        ejercicios_seleccionados = [exercise for exercise in usuarios_data if exercise["e_id"] in ids]
+        names,animations = zip(*[(exercise["e_name"],exercise["e_animation"]) for exercise in ejercicios_seleccionados])
+        # Imprimir los valores de u_name
+        print(names)
+        print(animations)
+        # Procesar cada diccionario en la lista
+        for usuario in usuarios_data:
+            u_id = usuario.get('u_id', 'N/A')
+            u_name = usuario.get('u_name', 'N/A')
+            u_lastname = usuario.get('u_lastname', 'N/A')
+            u_email = usuario.get('u_email', 'N/A')
+            u_age = usuario.get('u_age', 'N/A')
+            u_rol = usuario.get('u_rol', 'N/A')
 
-    # Configuración de la conexión a la base de datos RDS
-    db_config = {
-        'host': rds_host,
-        'user': db_user,
-        'password': db_password,
-        'database': db_database,
-        'port': rds_port,
-    }
-
-    # Intentar establecer la conexión a la base de datos
-    try:
-        connection = mysql.connector.connect(**db_config)
-        print("Conexión a la base de datos exitosa")
-
-        # A partir de aquí, puedes ejecutar consultas y realizar otras operaciones en la base de datos
-
-    except mysql.connector.Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
-
-    finally:
-        # Asegúrate de cerrar la conexión a la base de datos al finalizar
-        if connection and connection.is_connected():
-            connection.close()
-            print("Conexión a la base de datos cerrada")
-
-finally:
-    # Asegúrate de cerrar la conexión SSH al finalizar
-    if ssh_client:
-        ssh_client.close()
-        print("Conexión SSH cerrada")
+            # Hacer algo con la información, aquí se imprime en este ejemplo
+            #print(f"ID: {u_id}, Nombre: {u_name}, Apellido: {u_lastname}, Email: {u_email}, Edad: {u_age}, Rol: {u_rol}")
+    else:
+        print(f"Error al hacer la solicitud. Código de estado: {response.status_code}")
+except Exception as e:
+    print(f"Error: {e}")

@@ -1,142 +1,122 @@
 import mysql.connector
+import requests
+from datetime import datetime
 
 class database:
-    def __init__(self):
-        # Establece los detalles de conexión
-        self.config = {
-            'user': 'root',
-            'password': 'gymtar',
-            'host': '127.0.0.1',
-            'database': 'gymtar',
-            'port': 3306,
-            'raise_on_warnings': True
-        }
-        self.conn = None
-        self.cursor = None
-
-    def connection(self):
-        try:
-            print("intentando conectar")
-            # Crea una conexión a la base de datos
-            self.conn = mysql.connector.connect(**self.config)
-            # Crea un cursor para ejecutar consultas
-            self.cursor = self.conn.cursor()
-        except mysql.connector.Error as error:
-            print(f'Error al conectar a la base de datos: {error}')
-
-    def disconnection(self):
-        # Cierra el cursor
-        self.cursor.close()
-        if self.conn.is_connected():
-            self.conn.close()
 
     def login(self,id,password):
-        if id is None:
-            print("No hay datos")
-            return
-        else:
-            #print("hay datos")
-            # Ejecutar una consulta SELECT
-            consulta = "SELECT u_name,u_rol FROM usuarios where u_id = %s"
-            # Ejecuta la consulta con el parámetro pasado
-            self.cursor.execute(consulta, (id,))
-            # Obtiene los resultados
-            result = self.cursor.fetchone()
-            contenido_user = {
-                'name': "",
-                'rol': ""
-            }
-            if result:
-                contenido_user['name'] = str(result[0])
-                contenido_user['rol'] = str(result[1])
-                return contenido_user
+        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/usuario?id={id}"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:        
+                if response.content:                    
+                    usuario_data = response.json()   
+                    usuario_data = usuario_data[0]
+                    contenido_user = {
+                        'name': "",
+                        'rol': ""
+                    }                    
+                    contenido_user['name'] = usuario_data.get('u_name', 'N/A')
+                    contenido_user['rol'] = usuario_data.get('u_rol', 'N/A')                    
+                    print(f"Nombre: {contenido_user['name']}, Rol: {contenido_user['rol']}")
+                    return contenido_user
+                else:
+                    return
             else:
-                return
+                print(f"Error al hacer la solicitud. Código de estado: {response.status_code}")
+        except Exception as e:
+            print(f"Error: {e}")
+        return
 
     def select_routine(self,id,date):
-        if id is None:
-            print("No hay datos")
-            return
-        else:
-            #print("hay datos")
-            # Ejecutar una consulta SELECT
-            consulta = "SELECT r_exercises,r_repetitions,r_time FROM rutina where r_id = %s AND r_date =%s"
-            # Ejecuta la consulta con el parámetro pasado
-            self.cursor.execute(consulta, (id,date))
-            # Obtiene los resultados
-            result = self.cursor.fetchone()
-            contenido_user = {
-                'ejercicios': "",
-                'repeticiones': "",
-                'tiempos': ""
-            }
-            if result:
-                contenido_user['ejercicios'] = str(result[0])
-                contenido_user['repeticiones'] = str(result[1])
-                contenido_user['tiempos'] = str(result[2])
-                return contenido_user
+        print(date)
+        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/rutina?id={id}"
+        #consulta = "SELECT r_exercises,r_repetitions,r_time FROM rutina where r_id = %s AND r_date =%s"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:        
+                if response.content:
+                    rutina_data = response.json() 
+                    rutina_seleccionada = [rutine for rutine in rutina_data if  str(datetime.strptime(rutine.get("r_date"), '%a, %d %b %Y %H:%M:%S %Z').date()) == date]                     
+                    if rutina_seleccionada:
+                        rutina_seleccionada = rutina_seleccionada[0]
+                        contenido_user = {
+                            'ejercicios': "",
+                            'repeticiones': "",
+                            'tiempos': ""
+                        }
+                        contenido_user['ejercicios'] = rutina_seleccionada.get('r_exercises', 'N/A')
+                        contenido_user['repeticiones'] = rutina_seleccionada.get('r_repetitions', 'N/A')
+                        contenido_user['tiempos'] = rutina_seleccionada.get('r_time', 'N/A')
+                        print(f"Ejercicios: {contenido_user['ejercicios']}, Repeticiones: {contenido_user['repeticiones']}, Tiempos: {contenido_user['tiempos']}")
+                        return contenido_user                    
+                else:
+                    return
             else:
-                return
+                print(f"Error al hacer la solicitud. Código de estado: {response.status_code}")
+        except Exception as e:
+            print(f"Error: {e}")
+        return
 
     def select_exercise(self,id):
-        if id is None:
-            print("No hay datos")
-            return
-        else:
-            #print("hay datos")
-            # Ejecutar una consulta SELECT
-            consulta = "SELECT e_name FROM ejercicios where e_id = %s"
-            # Ejecuta la consulta con el parámetro pasado
-            self.cursor.execute(consulta, (id,))
-            # Obtiene los resultados
-            result = self.cursor.fetchone()
-            contenido_user = {
-                'name': ""
-            }
-            if result:
-                contenido_user['name'] = str(result[0])
-                return contenido_user
+        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/ejercicio?id={id}"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:        
+                if response.content:
+                    ejercicio_data = response.json() 
+                    ejercicio_data = ejercicio_data[0]
+                    contenido_user = {
+                        'name': ""
+                    }
+                    contenido_user['name'] = ejercicio_data.get('e_name', 'N/A')
+                    print(f"Ejercicio sql: {contenido_user['name']}")
+                    return contenido_user
+                else:
+                    return
             else:
-                return
-        
-
+                print(f"Error al hacer la solicitud. Código de estado: {response.status_code}")
+        except Exception as e:
+            print(f"Error: {e}")
+        return        
+    #### Modificar para que tambien saque las animaciones
     def select_exercises(self,ids):
-        if ids is None:
-            print("No hay datos")
-            return
-        else:
-            print("llega "+str(tuple(ids)))
-            query = "SELECT e_name FROM ejercicios WHERE e_id IN (%s)"
-            placeholders = ', '.join(['%s'] * len(ids))  # Crear marcadores de posición
-            query = query % placeholders
-            self.cursor.execute(query, ids)
-            result = self.cursor.fetchall()
-            # Obtiene los resultados            
-            if result:
-                lista_plana = [tupla[0] for tupla in result]
-                return lista_plana
+        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/ejercicios"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:        
+                if response.content:
+                    ejercicios_data = response.json() 
+                    ejercicios_seleccionados = [exercise for exercise in ejercicios_data if exercise["e_id"] in ids]
+                    names,animations = zip(*[(exercise["e_name"],exercise["e_animation"]) for exercise in ejercicios_seleccionados])
+                    return names,animations
+                else:
+                    return
             else:
-                return
-            
+                print(f"Error al hacer la solicitud. Código de estado: {response.status_code}")
+        except Exception as e:
+            print(f"Error: {e}")
+        return                  
 
     def select_animation(self,id):
-        if id is None:
-            print("No hay datos")
-            return
-        else:
-            #print("hay datos")
-            # Ejecutar una consulta SELECT
-            consulta = "SELECT e_animation FROM ejercicios where e_id = %s"
-            # Ejecuta la consulta con el parámetro pasado
-            self.cursor.execute(consulta, (id,))
-            # Obtiene los resultados
-            result = self.cursor.fetchone()
-            contenido_user = {
-                'name': ""
-            }
-            if result:
-                contenido_user['name'] = str(result[0])
-                return contenido_user
+        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/ejercicio?id={id}"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:        
+                if response.content:
+                    ejercicio_data = response.json() 
+                    ejercicio_data = ejercicio_data[0]
+                    contenido_user = {
+                        'name': ""
+                    }
+                    contenido_user['name'] = ejercicio_data.get('e_animation', 'N/A')
+                    print(f"animacion: {contenido_user['name']}")
+                    return contenido_user
+                else:
+                    return
             else:
-                return
+                print(f"Error al hacer la solicitud. Código de estado: {response.status_code}")
+        except Exception as e:
+            print(f"Error: {e}")
+        return        
             

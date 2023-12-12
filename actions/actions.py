@@ -70,6 +70,7 @@ slot_daytime = ''
 slot_rol = ''
 slot_avatar = 'Carlos'
 slot_ejercicio = ''
+slot_animaciones = ''
 id_user = 0
 user_rutine = []
 ejercicio = ''
@@ -79,7 +80,7 @@ contenido_user = []
 
 # DDBB
 db = database()
-db.connection()
+#db.connection()
 
 # Methods
 def __init__(self):
@@ -515,9 +516,9 @@ class Database():
             return False
 
     def exercises_today(exercises_id):
-        exercises = getattr(db, "select_exercises")(exercises_id)
+        exercises,animations = getattr(db, "select_exercises")(exercises_id)
         if exercises is not None: 
-            return exercises
+            return exercises,animations
         else:
             return None
 
@@ -566,7 +567,7 @@ class CSV():
                 else:
                     length = 0
             print(' - ' + str(response['text']))
-            writer.writerow(['say',str(response['text']), str(Emotions.estado),lang,animation_tag,str(Emotions.tag()),str(video),length,avatar])
+            writer.writerow(['say',str(response['text']), str(Emotions.estado),lang,"patata",str(Emotions.tag()),str(video),length,avatar])
         if(watch):
             writer.writerow(['watch',str(watchResponse)])
             watch = False
@@ -606,8 +607,10 @@ Database.login("101","127")
 if(Database.routine_today("101")):
     user_event = ['know','with_routine',True]
     ejercicios_id = [int(x) for x in user_rutine['ejercicios'].split(',')]
-    ejercicios_lista = Database.exercises_today(ejercicios_id)
+    ejercicios_lista,animaciones_lista = Database.exercises_today(ejercicios_id)
     rutina_len = len(ejercicios_lista)
+    slot_ejercicio = ejercicios_lista[0]
+    slot_animaciones = animaciones_lista[0]
     print(user_rutine)
     print(ejercicios_id)
     print(ejercicios_lista)

@@ -62,6 +62,15 @@ slots:
       - admin
       - user   
     influence_conversation: true
+  data:
+    type: categorical    
+    values:
+      - data
+      - nodata   
+    influence_conversation: true
+  ejercicio:
+    type: text
+    influence_conversation: true
 
 responses:
 
