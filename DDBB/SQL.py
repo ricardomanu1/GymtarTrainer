@@ -30,24 +30,23 @@ class database:
 
     def select_routine(self,id,date):
         print(date)
-        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/rutina?id={id}"
-        #consulta = "SELECT r_exercises,r_repetitions,r_time FROM rutina where r_id = %s AND r_date =%s"
+        url = f"http://ec2-16-170-250-70.eu-north-1.compute.amazonaws.com:5000/sesion?id={id}"
         try:
             response = requests.get(url)
             if response.status_code == 200:        
                 if response.content:
-                    rutina_data = response.json() 
-                    rutina_seleccionada = [rutine for rutine in rutina_data if  str(datetime.strptime(rutine.get("r_date"), '%a, %d %b %Y %H:%M:%S %Z').date()) == date]                     
-                    if rutina_seleccionada:
-                        rutina_seleccionada = rutina_seleccionada[0]
+                    sesion_data = response.json() 
+                    sesion_seleccionada = [sesion for sesion in sesion_data if  str(datetime.strptime(sesion.get("s_date"), '%a, %d %b %Y %H:%M:%S %Z').date()) == date]                     
+                    if sesion_seleccionada:
+                        sesion_seleccionada = sesion_seleccionada[0]
                         contenido_user = {
                             'ejercicios': "",
                             'repeticiones': "",
                             'tiempos': ""
                         }
-                        contenido_user['ejercicios'] = rutina_seleccionada.get('r_exercises', 'N/A')
-                        contenido_user['repeticiones'] = rutina_seleccionada.get('r_repetitions', 'N/A')
-                        contenido_user['tiempos'] = rutina_seleccionada.get('r_time', 'N/A')
+                        contenido_user['ejercicios'] = sesion_seleccionada.get('s_exercises', 'N/A')
+                        contenido_user['repeticiones'] = sesion_seleccionada.get('s_repetitions', 'N/A')
+                        contenido_user['tiempos'] = sesion_seleccionada.get('s_time', 'N/A')
                         print(f"Ejercicios: {contenido_user['ejercicios']}, Repeticiones: {contenido_user['repeticiones']}, Tiempos: {contenido_user['tiempos']}")
                         return contenido_user                    
                 else:
@@ -70,7 +69,7 @@ class database:
                         'name': ""
                     }
                     contenido_user['name'] = ejercicio_data.get('e_name', 'N/A')
-                    print(f"Ejercicio sql: {contenido_user['name']}")
+                    #print(f"Ejercicio sql: {contenido_user['name']}")
                     return contenido_user
                 else:
                     return
@@ -87,7 +86,7 @@ class database:
             if response.status_code == 200:        
                 if response.content:
                     ejercicios_data = response.json() 
-                    ejercicios_seleccionados = [exercise for exercise in ejercicios_data if exercise["e_id"] in ids]
+                    ejercicios_seleccionados = sorted([exercise for exercise in ejercicios_data if exercise["e_id"] in ids], key=lambda x: ids.index(x["e_id"]))
                     names,animations = zip(*[(exercise["e_name"],exercise["e_animation"]) for exercise in ejercicios_seleccionados])
                     return names,animations
                 else:
@@ -110,7 +109,7 @@ class database:
                         'name': ""
                     }
                     contenido_user['name'] = ejercicio_data.get('e_animation', 'N/A')
-                    print(f"animacion: {contenido_user['name']}")
+                    #print(f"animacion: {contenido_user['name']}")
                     return contenido_user
                 else:
                     return

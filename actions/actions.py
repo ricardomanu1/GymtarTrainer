@@ -493,7 +493,6 @@ class Database():
             slot_name = contenido_user['name']
             slot_rol = contenido_user['rol']
             slot_user = user_id        
-        print("Usuario: " + str(slot_name))
 
     def routine_today(user_id):
         global slot_data
@@ -506,12 +505,11 @@ class Database():
         if contenido_user is not None: 
             #Database.routine(contenido_user)
             slot_data = "data"
-            print("Tenemos datos para hoy")
-            print("Rutina: " + str(contenido_user))
+            print("Sesión de Hoy: " + str(contenido_user))
             user_rutine = contenido_user
             return True
         else:
-            print("No hay datos para hoy")
+            print("No hay Sesión para hoy")
             slot_data = "nodata"
             return False
 
@@ -611,9 +609,6 @@ if(Database.routine_today("101")):
     rutina_len = len(ejercicios_lista)
     slot_ejercicio = ejercicios_lista[0]
     slot_animaciones = animaciones_lista[0]
-    print(user_rutine)
-    print(ejercicios_id)
-    print(ejercicios_lista)
 else:
     user_event = ['know','without_routine',True]   
 Beliefs.agent_beliefs.append(user_event)
