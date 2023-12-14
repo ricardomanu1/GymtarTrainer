@@ -19,11 +19,16 @@ nlu:
 - intent: iniciar_rutina
   examples: |
     - Quiero iniciar rutina
+    - Quiero iniciar sesion
     - Inicia la rutina
     - Iniciar rutina
     - Inicia la rutina de hoy
+    - Inicia la sesion de hoy
     - Iniciar rutina
+    - Iniciar sesion
     - Quiero empezar la rutina
+    - Quiero empezar la sesion
+    - Quiero iniciar la sesion de hoy
 
 - intent: rutina
   examples: |
