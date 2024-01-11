@@ -17,8 +17,7 @@ class database:
                         'rol': ""
                     }                    
                     contenido_user['name'] = usuario_data.get('u_name', 'N/A')
-                    contenido_user['rol'] = usuario_data.get('u_rol', 'N/A')                    
-                    print(f"Nombre: {contenido_user['name']}, Rol: {contenido_user['rol']}")
+                    contenido_user['rol'] = usuario_data.get('u_rol', 'N/A')    
                     return contenido_user
                 else:
                     return

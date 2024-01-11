@@ -65,18 +65,19 @@ context = Intents.get_context()
 
 # Memoria del Bot
 slot_name = ''
-slot_data = 'nodata'
 slot_daytime = ''
 slot_rol = ''
 slot_avatar = 'Carlos'
 slot_ejercicio = ''
-slot_animaciones = ''
+slot_animacion = ''
 id_user = 0
-user_rutine = []
+
 ejercicio = ''
 slot_user = 0
 avatar = 'm'
-contenido_user = []
+session_today = []
+ejercicios_lista = []
+animaciones_lista = []
 
 # DDBB
 db = database()
@@ -138,7 +139,7 @@ class ChatBot(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]: 
         # Acceso a variables globales
         global Bi, Be, lang, polarity, inter1, date
-        global slot_name, slot_daytime, slot_rol, slot_avatar, slot_data, slot_ejercicio
+        global slot_name, slot_daytime, slot_rol, slot_avatar, slot_ejercicio, slot_animacion
         global id_user, ejercicio
 
         print("-------------------------------------------------------------------------------")
@@ -195,6 +196,7 @@ class ChatBot(Action):
             if 'ejercicio' in metadata:
                 ejercicio = metadata['ejercicio'] 
                 slot_ejercicio = ejercicios_lista[ejercicio]
+                slot_animacion = animaciones_lista[ejercicio]           
             objInterest = None                    
             user_event = [id_event,text,objInterest,'']             
         
@@ -202,7 +204,7 @@ class ChatBot(Action):
         print('EVENT: ' + str(user_event)) 
         EBDI.run(self, dispatcher, tracker, domain, user_event)
         
-        return [SlotSet("daytime", slot_daytime), SlotSet("data", slot_data),
+        return [SlotSet("daytime", slot_daytime),
                 SlotSet("rol", slot_rol), SlotSet("avatar", slot_avatar),
                 SlotSet("name", slot_name), SlotSet("ejercicio", slot_ejercicio)]
 
@@ -352,7 +354,6 @@ class To_Speech(Action):
         print('----RESPONSES----')  
         tracker.get_slot('daytime') 
         tracker.get_slot('rol') 
-        tracker.get_slot('data') 
         tracker.get_slot('ejercicio') 
 
         if count > 0:
@@ -378,13 +379,14 @@ class Say(Action):
         
         hours = str(f"{dt.datetime.now().strftime('%H:%M')}")
         day = the_day(str(f"{dt.datetime.now().strftime('%A')}"))  
+        nday = dt.datetime.now().strftime('%d')
 
         contador()
         print("   Dispatcher: " + str(count))   
 
         # Rasa dispara la respuesta junto a los valores de los slots        
         dispatcher.utter_message(response = resp, ejercicio = slot_ejercicio, day = day,
-            daytime = slot_daytime, name = slot_name, rol = slot_rol, data = slot_data,
+            daytime = slot_daytime, name = slot_name, rol = slot_rol, nday = nday,
             avatar = slot_avatar, hours = hours)
 
         return []
@@ -405,63 +407,55 @@ class Interface():
         interfaceResponse = response
         return "echo"
 
-# Accion para usar la base de datos
+'''
+CLASE: BASE DE DATOS - acciones locales
+'''
 class Database():
+
     def name (response):
-        global id_user, slot_name, slot_rol, slot_data, slot_user 
-        # Iniciar sesion
-        if response == "login":
-            contenido_user = getattr(db, response)(id_user,127)
-            if contenido_user is not None:
-                slot_name = contenido_user['name']
-                slot_rol = contenido_user['rol']
-                slot_user = id_user
+        global slot_user, date 
+        global Beliefs,Emotions,Intents
+        now = dt.datetime.now()
         # Seleccion de ejercicio
         if response == "select_exercise":
             print("select_exercise")
-        # Seleccion de rutina
-        if response == "select_routine" :           
-            now = dt.datetime.now()
+        if response == "update_data":
+            print("update_data")
+            Database.update_data()
+        if response == "check_session":
+            date = now.strftime("%Y-%m-%d")
+            Database.routine_today(slot_user)                 
+        # Seleccion de rutina de hoy
+        if response == "select_routine" :         
+            print("select_routine")
             date = now.strftime("%Y-%m-%d")
             contenido_user = getattr(db, "select_routine")(slot_user,date)
             if contenido_user is not None: 
-                Database.routine(contenido_user)
-                slot_data = "data"
+                Database.routine(contenido_user)              
             else:
                 print("No hay datos para esta fecha")
-                slot_data = "nodata"
         # Seleccion de rutina del proximo dia
-        if response == "select_next_routine" :           
-            now = dt.datetime.now()
+        if response == "select_next_routine" :  
             next_day = now + dt.timedelta(days=1)
-            date = next_day.strftime("%Y-%m-%d")
-            contenido_user = getattr(db, "select_routine")(slot_user,date)
+            next_date = next_day.strftime("%Y-%m-%d")
+            contenido_user = getattr(db, "select_routine")(slot_user,next_date)
             if contenido_user is not None: 
                 Database.routine(contenido_user)
-                slot_data = "data"
             else:
                 print("No hay datos para esta fecha")
-                slot_data = "nodata"
         # Seleccion de rutina del dia anterior
-        if response == "select_previous_routine" :           
-            now = dt.datetime.now()
+        if response == "select_previous_routine" :   
             previous_day = now - dt.timedelta(days=1)
-            date = previous_day.strftime("%Y-%m-%d")
-            contenido_user = getattr(db, "select_routine")(slot_user,date)
+            previous_date = previous_day.strftime("%Y-%m-%d")
+            contenido_user = getattr(db, "select_routine")(slot_user,previous_date)
             if contenido_user is not None: 
                 Database.routine(contenido_user)
-                slot_data = "data"
             else:
                 print("No hay datos para esta fecha")
-                slot_data = "nodata"
-        print("slot_name: " + str(slot_name))
-        print("slot_rol: " + str(slot_rol))
-        print("slot_data: " + str(slot_data))
-        print("slot_user: " + str(slot_user))
         return "echo"
 
     def routine(contenido_user):
-        global routine_say, exercises,animations
+        global routine_say, exercises, animations
         exercises = []
         animations = []
         routine_say = True        
@@ -485,34 +479,49 @@ class Database():
                 e_name['name'],r_array[i],t_array[i])
             exercises.append(new_string)
             animations.append(e_animation['name'])
-        
+    
+    # Acceso a la base de datos: Identificacion
     def login(user_id,user_pass):
         global slot_name, slot_rol, slot_user        
-        contenido_user = getattr(db, "login")(user_id,user_pass)
-        if contenido_user is not None:
-            slot_name = contenido_user['name']
-            slot_rol = contenido_user['rol']
-            slot_user = user_id        
-
-    def routine_today(user_id):
-        global slot_data
-        global contenido_user
-        global date
-        global user_rutine
-        now = dt.datetime.now()
-        date = now.strftime("%Y-%m-%d")
-        contenido_user = getattr(db, "select_routine")(slot_user,date)
-        if contenido_user is not None: 
-            #Database.routine(contenido_user)
-            slot_data = "data"
-            print("Sesión de Hoy: " + str(contenido_user))
-            user_rutine = contenido_user
+        login_user = getattr(db, "login")(user_id,user_pass)
+        if login_user is not None:
+            slot_name = login_user['name']
+            slot_rol = login_user['rol']
+            slot_user = user_id  
             return True
         else:
-            print("No hay Sesión para hoy")
-            slot_data = "nodata"
             return False
 
+    # Acceso a la base de datos: Rutina para hoy
+    def routine_today(user_id):
+        global session_today, date
+        global Beliefs,Emotions,Intents
+        date = dt.datetime.now().strftime("%Y-%m-%d")
+        session_today = getattr(db, "select_routine")(slot_user,date)
+        if session_today is not None: 
+            Beliefs.del_belief('without_routine')   
+            user_event = ['know','with_routine',None,'']
+            newBelief = Beliefs.new_belief(user_event)     
+            Beliefs.brf_in(Emotions,Intents,newBelief)
+            print("Sesión de Hoy: " + str(session_today))
+            return True
+        else:
+            Beliefs.del_belief('with_routine')
+            user_event = ['know','without_routine',None,'']
+            newBelief = Beliefs.new_belief(user_event)     
+            Beliefs.brf_in(Emotions,Intents,newBelief)  
+            print("No hay Sesión para hoy")
+            return False
+   
+    def update_data():
+        global slot_ejercicio, slot_animacion, rutina_len, ejercicios_lista, animaciones_lista
+        ejercicios_id = [int(x) for x in session_today['ejercicios'].split(',')]
+        ejercicios_lista, animaciones_lista = Database.exercises_today(ejercicios_id)
+        rutina_len = len(ejercicios_lista)
+        slot_ejercicio = ejercicios_lista[0]
+        slot_animacion = animaciones_lista[0]
+
+    # Acceso a la base de datos: nombres y animaciones de los ejercicios
     def exercises_today(exercises_id):
         exercises,animations = getattr(db, "select_exercises")(exercises_id)
         if exercises is not None: 
@@ -520,6 +529,9 @@ class Database():
         else:
             return None
 
+'''
+CLASE: COACH
+'''
 # Accion para usar la demo
 class Coach():
     def name (response):        
@@ -540,7 +552,7 @@ class Listening():
 ## Salida de las respuestas csv
 class CSV():
     def name(self,responses):
-        global watch, watchResponse
+        global watch, watchResponse, slot_animacion
         global interface, interfaceResponse
         global routine_say, exercises, animations
         global exercise_say, exercise_current
@@ -549,13 +561,13 @@ class CSV():
         writer.writerow(['action','response','emotion','language','animation','emotionAzure','video','length','avatar'])
         animation_tag = 'informar'  
         video = ''  
-        length = 0
+        length = 0        
         for response in responses:
             if 'metadata' in response['metadata']:
                 if 'subtext' in response['metadata']['metadata']:
-                    animation_tag = str(response['metadata']['metadata']['subtext'])
+                    animation_tag = str(response['metadata']['metadata']['subtext'])                    
                 else:
-                    animation_tag = 'informar'
+                    animation_tag = slot_animacion
                 if 'img' in response['metadata']['metadata']:
                     video = str(response['metadata']['metadata']['img'])
                 else:
@@ -564,8 +576,10 @@ class CSV():
                     length = float(response['metadata']['metadata']['length'])
                 else:
                     length = 0
+            else:
+                animation_tag = slot_animacion
             print(' - ' + str(response['text']))
-            writer.writerow(['say',str(response['text']), str(Emotions.estado),lang,"patata",str(Emotions.tag()),str(video),length,avatar])
+            writer.writerow(['say',str(response['text']), str(Emotions.estado),lang,animation_tag,str(Emotions.tag()),str(video),length,avatar])
         if(watch):
             writer.writerow(['watch',str(watchResponse)])
             watch = False
@@ -600,16 +614,20 @@ class Dictionary:
                     result_dict[item['value']] = item['synonyms']
         return result_dict
     
-# Ejecución Inicial
-Database.login("101","127")
-if(Database.routine_today("101")):
-    user_event = ['know','with_routine',True]
-    ejercicios_id = [int(x) for x in user_rutine['ejercicios'].split(',')]
-    ejercicios_lista,animaciones_lista = Database.exercises_today(ejercicios_id)
-    rutina_len = len(ejercicios_lista)
-    slot_ejercicio = ejercicios_lista[0]
-    slot_animaciones = animaciones_lista[0]
-else:
-    user_event = ['know','without_routine',True]   
-Beliefs.agent_beliefs.append(user_event)
-slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))   
+# EJECUCION INICIAL
+slot_daytime = part_of_day(int(f"{dt.datetime.now().strftime('%H')}"))  
+# Funcion Login Local
+if Database.login("101","127"):
+    # Funcion Rutine_today Local: Hay sesion para hoy
+    if(Database.routine_today("101")):
+        #user_event = ['know','with_routine',True]
+        Database.update_data()
+    # No hay sesion para hoy
+    #else:
+        #user_event = ['know','without_routine',True]   
+    # Añade la creencia de rutina para hoy o no
+    #Beliefs.agent_beliefs.append(user_event)
+ 
+print("slot_name: " + str(slot_name))
+print("slot_rol: " + str(slot_rol))
+print("slot_user: " + str(slot_user))

@@ -33,16 +33,20 @@ class intents_manager(object):
         self.intents.append(('say','utter_empatizar_emocion',['estado_emocion'],'a_say','utter_empatizar_emocion','a_dB','estado_emocion'))
         
         ## Rutina
-        self.intents.append(('say','utter_rutina',['rutina','with_routine'],'a_say','utter_rutina','a_dB','rutina','db','select_routine'))
-        self.intents.append(('say','utter_rutina',['rutina','without_routine'],'a_say','utter_rutina','a_dB','rutina'))
+        self.intents.append(('say','utter_rutina',['rutina'],'a_dB','rutina','db','check_session','a_nB','select_session'))
+        self.intents.append(('say','utter_rutina',['select_session','with_routine'],'a_dB','select_session','a_say','utter_rutina','db','select_routine'))
+        self.intents.append(('say','utter_rutina',['select_session','without_routine'],'a_dB','select_session','a_say','utter_no_rutina'))
+
         self.intents.append(('say','utter_rutina_proxima',['rutina_proxima'],'a_dB','rutina_proxima','a_say','utter_rutina_proxima','db','select_next_routine'))
         self.intents.append(('say','utter_rutina_anterior',['rutina_anterior'],'a_dB','rutina_anterior','a_say','utter_rutina_anterior','db','select_previous_routine'))
         
-        self.intents.append(('say','utter_con_rutina',['rutina_comprobacion','with_routine'],'a_dB','rutina_comprobacion','a_say','utter_con_rutina'))
-        self.intents.append(('say','utter_sin_rutina',['rutina_comprobacion','without_routine'],'a_dB','rutina_comprobacion','a_say','utter_sin_rutina'))
-        
-        self.intents.append(('say','iniciar_rutina',['iniciar_rutina','with_routine'],'a_dB','iniciar_rutina','a_say','utter_iniciar_rutina','a_say','utter_reloj','a_nB','a_reloj'))
-        self.intents.append(('say','iniciar_rutina',['iniciar_rutina','without_routine'],'a_dB','iniciar_rutina','a_say','utter_rutina'))
+        self.intents.append(('say','utter_con_rutina',['rutina_comprobacion'],'db','check_session','a_dB','rutina_comprobacion','a_nB','check_session'))
+        self.intents.append(('say','utter_con_rutina',['check_session','with_routine'],'a_dB','check_session','a_say','utter_con_rutina'))
+        self.intents.append(('say','utter_sin_rutina',['check_session','without_routine'],'a_dB','check_session','a_say','utter_sin_rutina'))
+
+        self.intents.append(('say','iniciar_rutina',['iniciar_rutina'],'a_dB','iniciar_rutina','db','check_session','a_nB','start_session'))
+        self.intents.append(('say','iniciar_rutina',['start_session','with_routine'],'a_dB','start_session','db','update_data','a_say','utter_iniciar_rutina','a_say','utter_reloj','a_nB','a_reloj'))
+        self.intents.append(('say','iniciar_rutina',['start_session','without_routine'],'a_dB','start_session','a_say','utter_no_rutina'))
      
         self.intents.append(('say','reloj', ['a_reloj','afirmar'],'a_dB','a_reloj','a_dB','afirmar','a_say','utter_afirmativo','a_say','utter_preparado','a_nB','a_preparado')) 
         self.intents.append(('say','reloj', ['a_reloj','negar'],'a_dB','a_reloj','a_dB','negar','a_say','utter_afirmativo','a_say','utter_no_reloj','a_say','utter_preparado','a_nB','a_preparado')) 
@@ -63,7 +67,7 @@ class intents_manager(object):
         self.intents.append(('know','register',['register'],'a_dB','register','a_say','utter_registro'))
         
         ## De UNREAL
-        self.intents.append(('say','demo_rutina',['demo_rutina'],'a_dB','demo_rutina','a_say','utter_demo_rutina','a_say','utter_ejercicio','co','siguiente_ejercicio',
+        self.intents.append(('say','demo_rutina',['demo_rutina','with_routine'],'a_dB','demo_rutina','a_say','utter_demo_rutina','a_say','utter_ejercicio','co','siguiente_ejercicio',
                              'a_say','utter_descanso','co','siguiente_ejercicio','a_say','utter_descanso','co','siguiente_ejercicio','a_say','utter_fin_rutina'))
         self.intents.append(('know','solicito_ejercicio',['solicito_ejercicio'],'a_dB','solicito_ejercicio','a_say','utter_eje')) #utter_eje_preparate
         self.intents.append(('know','solicito_descanso',['solicito_descanso'],'a_dB','solicito_descanso','a_say','utter_descanso')) 

@@ -34,6 +34,9 @@ responses:
   - metadata:
       subtext: preguntar     
     text: ¿Preparado para el entrenamiento?
+  - metadata:
+      subtext: preguntar     
+    text: ¿Estás preparado para el entrenamiento?
 
   utter_avisado:
   - metadata:
@@ -49,66 +52,46 @@ responses:
   - metadata:
       subtext: informar     
     text: Tienes esta rutina
-  - condition:
-      - type: slot
-        name: data
-        value: "data"
-    text: Hoy toca hacer esto.
-    metadata:
+  - metadata:
       subtext: informar 
+    text: Hoy toca hacer esto.    
 
-  - condition:
-      - type: slot
-        name: data
-        value: "nodata"
-    text: No hay resultados.
-    metadata:
-      subtext: informar 
+  utter_no_rutina:
+  - metadata:
+      subtext: informar
+    text: No hay resultados.    
 
-  - condition:
-      - type: slot
-        name: data
-        value: "nodata"
-    text: No tienes rutina para hoy.
-    metadata:
-      subtext: informar 
+  - metadata:
+      subtext: informar
+    text: No tienes rutina para hoy.     
 
   utter_rutina_proxima:
-  - condition:
-      - type: slot
-        name: data
-        value: "data"
+  - metadata:
+      subtext: informar
     text: Tendrás esta rutina.
-    metadata:
+
+  utter_no_utina_proxima:    
+  - metadata:
       subtext: informar 
-  - condition:
-      - type: slot
-        name: data
-        value: "nodata"
-    text: No tienes nada programado para mañana.
-    metadata:
-      subtext: informar 
+    text: No tienes nada programado para mañana.    
 
   utter_rutina_anterior:
-  - condition:
-      - type: slot
-        name: data
-        value: "data"
+  - metadata:
+      subtext: informar 
     text: Tuviste esta rutina.
-    metadata:
-      subtext: informar 
-  - condition:
-      - type: slot
-        name: data
-        value: "nodata"
+ 
+  utter_no_rutina_anterior:
+  - metadata:
+      subtext: informar
     text: No hay datos registrados del día de ayer.
-    metadata:
-      subtext: informar 
-
+   
   utter_con_rutina:
   - metadata:
       subtext: informar     
-    text: Sí, tienes una rutina para hoy.
+    text: Sí, tienes una rutina para hoy.    
+  - metadata:
+      subtext: informar     
+    text: Sí, tienes una sesión programada para hoy.
 
   utter_sin_rutina:
   - metadata:
@@ -164,18 +147,12 @@ responses:
     text: ¡Mantengan esa energía! Es hora de arrancar con el siguiente.
 
   utter_eje:
-  - metadata:
-      subtext: informar     
-    text: Venga, vamos con {ejercicio}
-  - metadata:
-      subtext: informar     
-    text: Toca {ejercicio}
-  - metadata:
-      subtext: informar     
-    text: Ahora haremos {ejercicio}
-  - metadata:
-      subtext: informar     
-    text: Ahora un poco de {ejercicio}
+  - text: Venga, vamos con {ejercicio}
+  - text: Venga, ahora vamos con {ejercicio}
+  - text: Toca {ejercicio}
+  - text: Ahora toca {ejercicio}
+  - text: Ahora haremos {ejercicio}
+  - text: Ahora un poco de {ejercicio}
 
   utter_eje_preparate:
   - metadata:

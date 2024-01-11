@@ -43,6 +43,9 @@ slots:
   day:
     type: text
     influence_conversation: true
+  nday:
+    type: text
+    influence_conversation: true
   avatar:
     type: text
     influence_conversation: true
@@ -61,12 +64,6 @@ slots:
     values:
       - admin
       - user   
-    influence_conversation: true
-  data:
-    type: categorical    
-    values:
-      - data
-      - nodata   
     influence_conversation: true
   ejercicio:
     type: text
@@ -477,7 +474,7 @@ responses:
   utter_responder_dia:
   - metadata:
       subtext: informar     
-    text: Hoy es {day}
+    text: Hoy es {day} {nday}
 
 # saludar 
   utter_saludar:

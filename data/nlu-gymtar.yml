@@ -12,23 +12,24 @@ nlu:
 - intent: login
   examples: |
     - Quiero iniciar sesión
-    - Inicio de sesión
+    - Abrir inicio de sesión
     - Iniciar sesión
     - Login
 
 - intent: iniciar_rutina
   examples: |
     - Quiero iniciar rutina
-    - Quiero iniciar sesion
+    - Quiero iniciar la sesión
+    - Iniciar la sesión de ejercicio
     - Inicia la rutina
     - Iniciar rutina
     - Inicia la rutina de hoy
-    - Inicia la sesion de hoy
+    - Inicia la sesión de hoy
     - Iniciar rutina
-    - Iniciar sesion
+    - Iniciar sesión
     - Quiero empezar la rutina
-    - Quiero empezar la sesion
-    - Quiero iniciar la sesion de hoy
+    - Quiero empezar la sesión
+    - Quiero iniciar la sesión de hoy
 
 - intent: rutina
   examples: |
